@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="lib/jquery-1.10.2.min.js"></script>
+    <script src="lib/typescript.js"></script>
+    <script src="typson.js"></script>
+    <title></title>
+</head>
+<body>
+    <pre id="types"></pre>
+    <script>
+        types("example/product.ts").done(function(data) {
+            $("#types").html(stringifyOnce(data, undefined, 2));
+        });
+    </script>
+</body>
+</html>
