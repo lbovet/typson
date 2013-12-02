@@ -1,11 +1,12 @@
-class Product {
+/// <reference path="misc/dimension.ts"/>
+
+interface Product {
     name: string;
-    price: number;
-    dimension: Dimension;
+    dimension?: Dimension;
     category: Category;
 }
 
-class Category {
+interface Category {
     name: string;
     level: number;
 }

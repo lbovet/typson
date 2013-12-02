@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <script src="lib/jquery-1.10.2.min.js"></script>
-    <script src="lib/typescript.js"></script>
-    <script src="typson.js"></script>
-    <title></title>
+    <script src="lib/require.js"></script>
+    <title>Typson playground</title>
 </head>
 <body>
     <pre id="types"></pre>
     <script>
-        types("example/product.ts").done(function(data) {
-            $("#types").html(stringifyOnce(data, undefined, 2));
+        require(["typson", "lib/jquery"], function(typson) {
+            // Enforce systematic reload of resources
+            $.ajaxSetup({ cache: false });
+            // Show a tree
+            typson.tree("example/invoice/line.ts").done(function(data) {
+                $("#types").html(JSON.stringify(data, undefined, 2));
+            });
         });
     </script>
 </body>

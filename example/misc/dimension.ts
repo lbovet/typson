@@ -1,5 +1,5 @@
 class Dimension {
     width: number;
     height: number;
-    length: number;
+    length:  number;
 }
