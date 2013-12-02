@@ -7,12 +7,12 @@
 <body>
     <pre id="types"></pre>
     <script>
-        require(["typson", "lib/jquery"], function(typson) {
+        require(["typson-schema", "lib/jquery"], function(schema) {
             // Enforce systematic reload of resources
             $.ajaxSetup({ cache: false });
-            // Show a tree
-            typson.tree("example/invoice/line.ts").done(function(data) {
-                $("#types").html(JSON.stringify(data, undefined, 2));
+            // Show types as json-schema definitions
+            schema.definitions("example/invoice/line.ts").done(function(tree) {
+                $("#types").html(JSON.stringify(tree, undefined, 2));
             });
         });
     </script>

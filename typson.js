@@ -15,7 +15,7 @@
  */
 
 define([ "lib/jquery.js", "lib/typescriptServices" ], function () {
-    var typson = {};
+    var exports = {};
 
     /**
      * Loads a type script from a URI, compile it and returns a symbolic tree.
@@ -24,7 +24,7 @@ define([ "lib/jquery.js", "lib/typescriptServices" ], function () {
      * @param uri {string} Where to load the script from.
      * @returns {promise} Resolve to a map {scriptPath -> AST }
      */
-    typson.tree = function (uri) {
+    exports.tree = function (uri) {
         var d = $.Deferred();
         var context = {
             compiler: new TypeScript.TypeScriptCompiler(),
@@ -152,5 +152,5 @@ define([ "lib/jquery.js", "lib/typescriptServices" ], function () {
 
     // Enables to apply $.when to an array of promises
     $.when.all = Function.prototype.apply.bind($.when, null);
-    return typson;
+    return exports;
 });
