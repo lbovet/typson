@@ -38,12 +38,20 @@ define(["typson"], function(typson) {
                        copyComment(type, definition);
                        $.each(type.members.members, function(k, variable) {
                            var property = definition.properties[variable.id.actualText] = {};
-                           var propertyType = variable.typeExpr.term.actualText;
+                           var variableType = variable.typeExpr.term.actualText;
                            copyComment(variable, property);
-                           if(primitiveTypes.indexOf(propertyType) == -1) {
-                               property.$ref = propertyType;
+                           var propertyType = null;
+                           if(variable.typeExpr.getFlags() & 8 /* todo: find constant */) {
+                               property.type = "array";
+                               propertyType = property.items = {};
                            } else {
-                               property.type = propertyType;
+                               propertyType = property;
+                           }
+
+                           if(primitiveTypes.indexOf(variableType) == -1) {
+                               propertyType.$ref = variableType;
+                           } else {
+                               propertyType.type = variableType;
                            }
                        });
                    }
