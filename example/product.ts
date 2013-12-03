@@ -10,7 +10,7 @@ interface Product {
 }
 
 interface Category {
-    /** Uniquely identifies the category **/
+    /** Uniquely identifies the category */
     name: string;
     /** Classification level from 1 to 5 (highest) */
     level: number;

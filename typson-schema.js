@@ -31,13 +31,15 @@ define(["typson"], function(typson) {
            $.each(tree, function(k,script) {
                $.each(script.moduleElements.members, function(k, type) {
                    if(type.nodeType() == TypeScript.NodeType.InterfaceDeclaration) {
-                       var definition = definitions[type.name.actualText] = {
-                           id: type.name.actualText,
-                           properties: {}
-                       };
+                       var definition = definitions[type.name.actualText] = {};
+                       definition.id = type.name.actualText;
+                       copyComment(type, definition);
+                       definition.properties = {};
+                       copyComment(type, definition);
                        $.each(type.members.members, function(k, variable) {
                            var property = definition.properties[variable.id.actualText] = {};
                            var propertyType = variable.typeExpr.term.actualText;
+                           copyComment(variable, property);
                            if(primitiveTypes.indexOf(propertyType) == -1) {
                                property.$ref = propertyType;
                            } else {
@@ -51,6 +53,13 @@ define(["typson"], function(typson) {
        });
        return d.promise();
    };
+
+   function copyComment(from, to) {
+       var comments = from.docComments();
+       if(comments.length > 0) {
+           to.description = comments.slice(-1)[0].getDocCommentTextValue();
+       }
+   }
 
    return exports;
 });

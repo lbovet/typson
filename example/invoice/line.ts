@@ -1,12 +1,18 @@
 /// <reference path="../misc/dimension.ts"/>
 /// <reference path="../product.ts"/>
 
+/**
+ * Represents the document sent to the customer for payment.
+ */
 interface Invoice {
-    /** Who will pay? */
+    /**
+     * Who will pay?
+     * Not me! éàè
+     */
     customer: string;
-    /** Invoice content **/
+    /** Invoice content */
     lines: InvoiceLine[];
-    /** Total dimension of the order **/
+    /** Total dimension of the order */
     dimension: Dimension;
 }
 
