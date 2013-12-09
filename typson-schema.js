@@ -18,6 +18,8 @@ define(["typson"], function(typson) {
    var exports = {};
    var primitiveTypes = [ "string", "number", "boolean" ];
 
+
+
     /**
      * Creates json-schema type definitions from a type script.
      *

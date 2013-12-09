@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-define([ "lib/jquery.js", "lib/typescriptServices" ], function () {
+define([ "lib/jquery", "lib/typescriptServices" ], function () {
     var exports = {};
 
     /**
@@ -68,6 +68,14 @@ define([ "lib/jquery.js", "lib/typescriptServices" ], function () {
         return d.promise();
     };
 
+    function loadUrl(url) {
+        if(url.indexOf("\n") != -1) {
+            return $.Deferred().resolve(url).promise();
+        } else {
+            return $.get(url);
+        }
+    }
+
     /**
      * Loads the given files and dependencies recursively in the compiler.
      *
@@ -83,7 +91,7 @@ define([ "lib/jquery.js", "lib/typescriptServices" ], function () {
             if (context.files.indexOf(path) == -1) {
                 context.files.push(path);
                 console.log("Loading " + path);
-                return $.ajax({ url: path})
+                return loadUrl(path)
                     .then(function (script) {
                         var d = $.Deferred();
                         // Pre-process to find referenced files
