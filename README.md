@@ -3,6 +3,6 @@ Typson
 
 JSON typing tools.
 
-Write your type definition in TypeScript and Typson will generate json-schemas and documentation.
+Write your type definitions in TypeScript and Typson will generate json-schemas.
 
 Runs entirely in the browser.
