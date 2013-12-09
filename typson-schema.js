@@ -35,7 +35,6 @@ define(["typson"], function(typson) {
                        definition.id = type.name.actualText;
                        copyComment(type, definition);
                        definition.properties = {};
-                       copyComment(type, definition);
                        $.each(type.members.members, function(k, variable) {
                            var property = definition.properties[variable.id.actualText] = {};
                            var variableType = variable.typeExpr.term.actualText;
