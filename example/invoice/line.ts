@@ -18,5 +18,6 @@ interface Invoice {
 
 interface InvoiceLine {
     product: Product;
+    /** @minimum 1 @maximum 10*/
     quantity: number;
 }

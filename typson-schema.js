@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+
 define(["typson"], function(typson) {
    var exports = {};
    var primitiveTypes = [ "string", "number", "boolean" ];
+   var annotationPattern = /@[a-z]+\s*[a-z0-9]+/gi;
 
     /**
      * Creates json-schema type definitions from a type script.
@@ -41,6 +43,9 @@ define(["typson"], function(typson) {
                            var variableType = variable.typeExpr.term.actualText;
                            copyComment(variable, property);
                            var propertyType = null;
+
+                           //TODO: to implement schema generation for map declaration
+                           
                            if(variable.typeExpr.getFlags() & 8 /* todo: find constant */) {
                                property.type = "array";
                                propertyType = property.items = {};
@@ -55,6 +60,13 @@ define(["typson"], function(typson) {
                            }
                        });
                    }
+                   
+                   //TODO: to implement schema generation for enum declaration
+                   
+                   else if (type.nodeType() == TypeScript.NodeType.EnumDeclaration) {
+                       var definition = definitions[type.name.actualText] = {};
+                       definition.id = type.name.actualText;
+                   }
                });
            });
            d.resolve(definitions);
@@ -64,9 +76,28 @@ define(["typson"], function(typson) {
 
    function copyComment(from, to) {
        var comments = from.docComments();
+       
        if(comments.length > 0) {
-           to.description = comments.slice(-1)[0].getDocCommentTextValue();
+           var commentContent = comments.slice(-1)[0].getDocCommentTextValue();
+           
+           if (!copyAnnotations(commentContent, to)) {
+               to.description = commentContent;
+           }
        }
+   }
+   
+   function copyAnnotations(comment, to) {
+	   var hasAnnotation = false;
+	   var annotation;
+	   while ((annotation = annotationPattern.exec(comment))) {
+		   var annotationTokens = annotation[0].split(' ');
+		   var keyword = annotationTokens[0].slice(1);
+		   var value = annotationTokens.length > 1 ? annotationTokens[1] : '';
+		   to[keyword] = value;
+		   hasAnnotation = true;
+	   }
+	   annotationPattern.lastIndex = 0;
+	   return hasAnnotation;
    }
 
    return exports;
