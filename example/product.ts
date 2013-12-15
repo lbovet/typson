@@ -1,7 +1,9 @@
 /// <reference path="misc/dimension.ts"/>
 
 interface Product {
-    /** Uniquely defines the product */
+    /** Uniquely defines the product
+     * @pattern [A-Z][a-z][0-9]_
+     */
     name: string;
     /** How big it is */
     dimension?: Dimension;

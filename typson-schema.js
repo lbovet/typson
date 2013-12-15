@@ -19,7 +19,7 @@ define(["typson"], function(typson) {
    var exports = {};
    var primitiveTypes = [ "string", "number", "boolean" ];
    var validationKeywords = [ "minimum", "exclusiveMinimum", "maximum", "exclusiveMaximum", "multipleOf", "minLength", "maxLength", "format", "pattern", "minItems", "maxItems", "uniqueItems" ];
-   var annotedValidationKeywordPattern = /@[a-z]+\s*[a-z0-9]+/gi;
+   var annotedValidationKeywordPattern = /@[a-z]+\s*[^@\s]+/gi;
 
    /**
      * Creates json-schema type definitions from a type script.
@@ -111,6 +111,9 @@ define(["typson"], function(typson) {
 		   // case sensitive check inside the dictionary
 		   if (validationKeywords.indexOf(keyword) >= 0) {
 			   var value = annotationTokens.length > 1 ? annotationTokens[1] : '';
+               try {
+                value = JSON.parse(value);
+               } catch(e) {}
 			   to[keyword] = value;
 		   }
 	   }
