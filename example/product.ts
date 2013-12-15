@@ -15,3 +15,10 @@ interface Category {
     /** Classification level from 1 to 5 (highest) */
     level: number;
 }
+
+interface CategoryIndex {
+	categories: { [key: string]: Category };
+	products: { [key: string]: Product[] };
+	sizes: { [key: string]: number };
+}
+
