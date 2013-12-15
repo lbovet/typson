@@ -74,7 +74,7 @@ define(["typson"], function(typson) {
        
        if(comments.length > 0) {
            var commentContent = comments.slice(-1)[0].getDocCommentTextValue();
-           extractValidationKeywordsFromComment(extractDescriptionFromComment(commentContent, to), to); 
+           copyValidationKeywords(copyDescription(commentContent, to), to); 
        }
    }
    
@@ -86,7 +86,7 @@ define(["typson"], function(typson) {
     * @param to {object} the destination variable or definition.
     * @returns {string} the full comment minus the beginning description part.
     */
-   function extractDescriptionFromComment(comment, to) {
+   function copyDescription(comment, to) {
 	   var delimiter = '@';
 	   var delimiterIndex = comment.indexOf(delimiter);
 	   var description = comment.slice(0, delimiterIndex < 0 ? comment.length : delimiterIndex);
@@ -103,8 +103,9 @@ define(["typson"], function(typson) {
     * @param comment {string} the full comment.
     * @param to {object} the destination variable.
     */
-   function extractValidationKeywordsFromComment(comment, to) {
+   function copyValidationKeywords(comment, to) {
 	   annotedValidationKeywordPattern.lastIndex = 0;
+	   // TODO: to improve the use of the exec method: it could make the tokenization
 	   while ((annotation = annotedValidationKeywordPattern.exec(comment))) {
 		   var annotationTokens = annotation[0].split(' ');
 		   var keyword = annotationTokens[0].slice(1);
