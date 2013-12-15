@@ -74,17 +74,19 @@ define(["typson"], function(typson) {
        
        if(comments.length > 0) {
            var commentContent = comments.slice(-1)[0].getDocCommentTextValue();
-           extractValidationKeywords(extractDescription(commentContent, to), to); 
+           extractValidationKeywordsFromComment(extractDescriptionFromComment(commentContent, to), to); 
        }
    }
    
    /**
-    * Extracts the description part of a comment. The description is supposed to start at first position and may be delimited by @.
+    * Extracts the description part of a comment and register it in the description property.
+    * The description is supposed to start at first position and may be delimited by @.
     *
     * @param comment {string} the full comment.
-    * @returns {string} the full comment minus the description.
+    * @param to {object} the destination variable or definition.
+    * @returns {string} the full comment minus the beginning description part.
     */
-   function extractDescription(comment, to) {
+   function extractDescriptionFromComment(comment, to) {
 	   var delimiter = '@';
 	   var delimiterIndex = comment.indexOf(delimiter);
 	   var description = comment.slice(0, delimiterIndex < 0 ? comment.length : delimiterIndex);
@@ -95,11 +97,13 @@ define(["typson"], function(typson) {
    }
    
    /**
-    * Extracts the schema validation keywords. A validation keyword starts by a @. It has a name and a value. Several keywords may occur.
+    * Extracts the schema validation keywords stored in a comment and register them as properties.
+    * A validation keyword starts by a @. It has a name and a value. Several keywords may occur.
     *
     * @param comment {string} the full comment.
+    * @param to {object} the destination variable.
     */
-   function extractValidationKeywords(comment, to) {
+   function extractValidationKeywordsFromComment(comment, to) {
 	   annotedValidationKeywordPattern.lastIndex = 0;
 	   while ((annotation = annotedValidationKeywordPattern.exec(comment))) {
 		   var annotationTokens = annotation[0].split(' ');
