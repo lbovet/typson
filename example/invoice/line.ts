@@ -10,7 +10,11 @@ interface Invoice {
      * Not me! éàè
      */
     customer: string;
-    /** Invoice content */
+    /**
+    * Invoice content
+    * @minItems 1
+    * @maxItems 50
+    */
     lines: InvoiceLine[];
     /** Total dimension of the order */
     dimension: Dimension;
@@ -18,6 +22,11 @@ interface Invoice {
 
 interface InvoiceLine {
     product: Product;
-    /** @minimum 1 @maximum 10*/
+    /**
+    * @minimum 0
+    * @exclusiveMinimum true
+    * @maximum 10
+    * @exclusiveMaximum false
+    */
     quantity: number;
 }

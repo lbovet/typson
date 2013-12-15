@@ -18,9 +18,10 @@
 define(["typson"], function(typson) {
    var exports = {};
    var primitiveTypes = [ "string", "number", "boolean" ];
-   var annotationPattern = /@[a-z]+\s*[a-z0-9]+/gi;
+   var validationKeywords = [ "minimum", "exclusiveMinimum", "maximum", "exclusiveMaximum", "multipleOf", "minLength", "maxLength", "format", "pattern", "minItems", "maxItems", "uniqueItems" ];
+   var annotedValidationKeywordPattern = /@[a-z]+\s*[a-z0-9]+/gi;
 
-    /**
+   /**
      * Creates json-schema type definitions from a type script.
      *
      * @param uri {string} Points to the source type script.
@@ -45,6 +46,7 @@ define(["typson"], function(typson) {
                            var propertyType = null;
 
                            //TODO: to implement schema generation for map declaration
+                           //TODO: to implement schema generation for enum declaration                 
                            
                            if(variable.typeExpr.getFlags() & 8 /* todo: find constant */) {
                                property.type = "array";
@@ -60,13 +62,6 @@ define(["typson"], function(typson) {
                            }
                        });
                    }
-                   
-                   //TODO: to implement schema generation for enum declaration
-                   
-                   else if (type.nodeType() == TypeScript.NodeType.EnumDeclaration) {
-                       var definition = definitions[type.name.actualText] = {};
-                       definition.id = type.name.actualText;
-                   }
                });
            });
            d.resolve(definitions);
@@ -79,25 +74,42 @@ define(["typson"], function(typson) {
        
        if(comments.length > 0) {
            var commentContent = comments.slice(-1)[0].getDocCommentTextValue();
-           
-           if (!copyAnnotations(commentContent, to)) {
-               to.description = commentContent;
-           }
+           extractValidationKeywords(extractDescription(commentContent, to), to); 
        }
    }
    
-   function copyAnnotations(comment, to) {
-	   var hasAnnotation = false;
-	   var annotation;
-	   while ((annotation = annotationPattern.exec(comment))) {
+   /**
+    * Extracts the description part of a comment. The description is supposed to start at first position and may be delimited by @.
+    *
+    * @param comment {string} the full comment.
+    * @returns {string} the full comment minus the description.
+    */
+   function extractDescription(comment, to) {
+	   var delimiter = '@';
+	   var delimiterIndex = comment.indexOf(delimiter);
+	   var description = comment.slice(0, delimiterIndex < 0 ? comment.length : delimiterIndex);
+	   if (description.length > 0) {
+		   to.description = description;
+	   }
+	   return delimiterIndex < 0 ? '' : comment.slice(delimiterIndex);
+   }
+   
+   /**
+    * Extracts the schema validation keywords. A validation keyword starts by a @. It has a name and a value. Several keywords may occur.
+    *
+    * @param comment {string} the full comment.
+    */
+   function extractValidationKeywords(comment, to) {
+	   annotedValidationKeywordPattern.lastIndex = 0;
+	   while ((annotation = annotedValidationKeywordPattern.exec(comment))) {
 		   var annotationTokens = annotation[0].split(' ');
 		   var keyword = annotationTokens[0].slice(1);
-		   var value = annotationTokens.length > 1 ? annotationTokens[1] : '';
-		   to[keyword] = value;
-		   hasAnnotation = true;
+		   // case sensitive check inside the dictionary
+		   if (validationKeywords.indexOf(keyword) >= 0) {
+			   var value = annotationTokens.length > 1 ? annotationTokens[1] : '';
+			   to[keyword] = value;
+		   }
 	   }
-	   annotationPattern.lastIndex = 0;
-	   return hasAnnotation;
    }
 
    return exports;

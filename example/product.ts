@@ -22,5 +22,3 @@ interface CategoryIndex {
 	sizes: { [key: string]: number };
 }
 
-enum CategoryCode { "priority", "economy" };
-
