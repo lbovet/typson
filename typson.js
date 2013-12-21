@@ -38,7 +38,7 @@
     }
 
     var TypeScript;
-    requirejs(["./lib/typescriptServices"], function (ts) {
+    requirejs(["lib/typescriptServices"], function (ts) {
         TypeScript = ts;
         api.TypeScript = ts;
         tsLoaded.resolve();
