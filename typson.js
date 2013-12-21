@@ -98,7 +98,9 @@
 
     function loadScript(location) {
         if (location.indexOf("\n") != -1) {
-            return Q.defer().resolve(location);
+            var d = Q.defer();
+            d.resolve(location);
+            return d.promise;
         } else {
             return Q.promise(function (resolve, fail) {
                 if (typeof window !== 'undefined' || /^https?:\/\//.test(location)) {
