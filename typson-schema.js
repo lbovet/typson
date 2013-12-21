@@ -132,11 +132,9 @@
         }
     }
 
-    var sys = require('sys');
-
     api.exec = function(script) {
         api.definitions(script).done(function(definitions) {
-            sys.print(JSON.stringify(definitions, null, 2));
+            require('sys').print(JSON.stringify(definitions, null, 2));
         });
     }
 
@@ -144,7 +142,7 @@
         if (process.argv[2]) {
             api.exec(process.argv[2]);
         } else {
-            sys.print("Usage: node typson-schema.js <url-or-path-to-type-script-file>\n");
+            require('sys').print("Usage: node typson-schema.js <url-or-path-to-type-script-file>\n");
         }
     } else {
         return api;
