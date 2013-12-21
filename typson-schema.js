@@ -14,110 +14,134 @@
  * limitations under the License.
  */
 
+(function (definition) {
+    // CommonJS
+    if (typeof exports === "object") {
+        module.exports = definition(require('underscore'), require('q'), require('./typson.js'));
+        // RequireJS
+    } else if (typeof define === "function" && define.amd) {
+        define(["lib/underscore", "lib/q", "typson"], definition);
+    }
+})
+(function (underscore, Q, typson) {
+    if (underscore) {
+        _ = underscore;
+    }
+    var api = {};
 
-define(["typson"], function(typson) {
-   var exports = {};
-   var primitiveTypes = [ "string", "number", "boolean" ];
-   var validationKeywords = [ "minimum", "exclusiveMinimum", "maximum", "exclusiveMaximum", "multipleOf", "minLength", "maxLength", "format", "pattern", "minItems", "maxItems", "uniqueItems" ];
-   var annotedValidationKeywordPattern = /@[a-z]+\s*[^@\s]+/gi;
+    var primitiveTypes = [ "string", "number", "boolean" ];
+    var validationKeywords = [ "minimum", "exclusiveMinimum", "maximum", "exclusiveMaximum", "multipleOf", "minLength", "maxLength", "format", "pattern", "minItems", "maxItems", "uniqueItems" ];
+    var annotedValidationKeywordPattern = /@[a-z]+\s*[^@\s]+/gi;
 
-   /**
+    /**
      * Creates json-schema type definitions from a type script.
      *
      * @param uri {string} Points to the source type script.
-     * @returns {promise} Resolves to the schema definition structure.
      */
-   exports.definitions = function(uri) {
-       var d = $.Deferred();
-       typson.tree(uri).done(function(tree) {
-           var definitions = {};
-           $.each(tree, function(k,script) {
-               $.each(script.moduleElements.members, function(k, type) {
-                   if(type.nodeType() == TypeScript.NodeType.InterfaceDeclaration) {
-                       var definition = definitions[type.name.actualText] = {};
-                       definition.id = type.name.actualText;
-                       copyComment(type, definition);
-                       definition.properties = {};
-                       $.each(type.members.members, function(k, variable) {
-                           var property = definition.properties[variable.id.actualText] = {};
-                           var variableType = variable.typeExpr.term.actualText;
-                           copyComment(variable, property);
-                           var propertyType = null;
+    api.definitions = function (uri) {
+        return Q.promise(function (resolve) {
+            typson.tree(uri).done(function (tree) {
+                TypeScript = typson.TypeScript;
+                var definitions = {};
+                _.each(tree, function (script) {
+                    _.each(script.moduleElements.members, function (type) {
+                        if (type.nodeType() == TypeScript.NodeType.InterfaceDeclaration) {
+                            var definition = definitions[type.name.actualText] = {};
+                            definition.id = type.name.actualText;
+                            copyComment(type, definition);
+                            definition.properties = {};
+                            _.each(type.members.members, function (variable) {
+                                var property = definition.properties[variable.id.actualText] = {};
+                                var variableType = variable.typeExpr.term.actualText;
+                                copyComment(variable, property);
+                                var propertyType = null;
 
-                           //TODO: to implement schema generation for map declaration
-                           //TODO: to implement schema generation for enum declaration                 
-                           
-                           if(variable.typeExpr.getFlags() & 8 /* todo: find constant */) {
-                               property.type = "array";
-                               propertyType = property.items = {};
-                           } else {
-                               propertyType = property;
-                           }
+                                //TODO: to implement schema generation for map declaration
+                                //TODO: to implement schema generation for enum declaration
 
-                           if(primitiveTypes.indexOf(variableType) == -1) {
-                               propertyType.$ref = variableType;
-                           } else {
-                               propertyType.type = variableType;
-                           }
-                       });
-                   }
-               });
-           });
-           d.resolve(definitions);
-       });
-       return d.promise();
-   };
+                                if (variable.typeExpr.getFlags() & 8 /* todo: find constant */) {
+                                    property.type = "array";
+                                    propertyType = property.items = {};
+                                } else {
+                                    propertyType = property;
+                                }
 
-   function copyComment(from, to) {
-       var comments = from.docComments();
-       
-       if(comments.length > 0) {
-           var commentContent = comments.slice(-1)[0].getDocCommentTextValue();
-           copyValidationKeywords(copyDescription(commentContent, to), to); 
-       }
-   }
-   
-   /**
-    * Extracts the description part of a comment and register it in the description property.
-    * The description is supposed to start at first position and may be delimited by @.
-    *
-    * @param comment {string} the full comment.
-    * @param to {object} the destination variable or definition.
-    * @returns {string} the full comment minus the beginning description part.
-    */
-   function copyDescription(comment, to) {
-	   var delimiter = '@';
-	   var delimiterIndex = comment.indexOf(delimiter);
-	   var description = comment.slice(0, delimiterIndex < 0 ? comment.length : delimiterIndex);
-	   if (description.length > 0) {
-		   to.description = description;
-	   }
-	   return delimiterIndex < 0 ? '' : comment.slice(delimiterIndex);
-   }
-   
-   /**
-    * Extracts the schema validation keywords stored in a comment and register them as properties.
-    * A validation keyword starts by a @. It has a name and a value. Several keywords may occur.
-    *
-    * @param comment {string} the full comment.
-    * @param to {object} the destination variable.
-    */
-   function copyValidationKeywords(comment, to) {
-	   annotedValidationKeywordPattern.lastIndex = 0;
-	   // TODO: to improve the use of the exec method: it could make the tokenization
-	   while ((annotation = annotedValidationKeywordPattern.exec(comment))) {
-		   var annotationTokens = annotation[0].split(' ');
-		   var keyword = annotationTokens[0].slice(1);
-		   // case sensitive check inside the dictionary
-		   if (validationKeywords.indexOf(keyword) >= 0) {
-			   var value = annotationTokens.length > 1 ? annotationTokens[1] : '';
-               try {
-                value = JSON.parse(value);
-               } catch(e) {}
-			   to[keyword] = value;
-		   }
-	   }
-   }
+                                if (primitiveTypes.indexOf(variableType) == -1) {
+                                    propertyType.$ref = variableType;
+                                } else {
+                                    propertyType.type = variableType;
+                                }
+                            });
+                        }
+                    });
+                });
+                resolve(definitions);
+            });
+        });
+    };
 
-   return exports;
+    function copyComment(from, to) {
+        var comments = from.docComments();
+
+        if (comments.length > 0) {
+            var commentContent = comments.slice(-1)[0].getDocCommentTextValue();
+            copyValidationKeywords(copyDescription(commentContent, to), to);
+        }
+    }
+
+    /**
+     * Extracts the description part of a comment and register it in the description property.
+     * The description is supposed to start at first position and may be delimited by @.
+     *
+     * @param comment {string} the full comment.
+     * @param to {object} the destination variable or definition.
+     * @returns {string} the full comment minus the beginning description part.
+     */
+    function copyDescription(comment, to) {
+        var delimiter = '@';
+        var delimiterIndex = comment.indexOf(delimiter);
+        var description = comment.slice(0, delimiterIndex < 0 ? comment.length : delimiterIndex);
+        if (description.length > 0) {
+            to.description = description;
+        }
+        return delimiterIndex < 0 ? '' : comment.slice(delimiterIndex);
+    }
+
+    /**
+     * Extracts the schema validation keywords stored in a comment and register them as properties.
+     * A validation keyword starts by a @. It has a name and a value. Several keywords may occur.
+     *
+     * @param comment {string} the full comment.
+     * @param to {object} the destination variable.
+     */
+    function copyValidationKeywords(comment, to) {
+        annotedValidationKeywordPattern.lastIndex = 0;
+        // TODO: to improve the use of the exec method: it could make the tokenization
+        while ((annotation = annotedValidationKeywordPattern.exec(comment))) {
+            var annotationTokens = annotation[0].split(' ');
+            var keyword = annotationTokens[0].slice(1);
+            // case sensitive check inside the dictionary
+            if (validationKeywords.indexOf(keyword) >= 0) {
+                var value = annotationTokens.length > 1 ? annotationTokens[1] : '';
+                try {
+                    value = JSON.parse(value);
+                } catch (e) {
+                }
+                to[keyword] = value;
+            }
+        }
+    }
+
+    if (typeof window === 'undefined' && require.main === module) {
+        var sys = require('sys');
+        if (process.argv[2]) {
+            api.definitions(process.argv[2]).done(function(definitions) {
+                sys.print(JSON.stringify(definitions, null, 2));
+            });
+        } else {
+            sys.print("Usage: node typson-schema.js <path-to-type-script>");
+        }
+    } else {
+        return api;
+    }
 });

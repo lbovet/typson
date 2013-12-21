@@ -7,12 +7,11 @@
 <body>
     <pre id="types"></pre>
     <script>
-        require(["typson-schema", "lib/jquery"], function(schema) {
-            // Enforce systematic reload of resources
-            $.ajaxSetup({ cache: false });
+        require.config({ urlArgs: "bust=" +  (new Date()).getTime() });
+        require(["typson-schema"], function(typson) {
             // Show types as json-schema definitions
-            schema.definitions("example/invoice/line.ts").done(function(tree) {
-                $("#types").html(JSON.stringify(tree, undefined, 2));
+            typson.definitions("example/invoice/line.ts").done(function(tree) {
+                document.getElementById("types").innerHTML = JSON.stringify(tree, undefined, 2);
             });
         });
     </script>
