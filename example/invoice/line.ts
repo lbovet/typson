@@ -28,10 +28,11 @@ interface InvoiceLine {
     product: Product;
 
     /**
-     * @minimum 0
-     * @exclusiveMinimum true
-     * @maximum 10
-     * @exclusiveMaximum false
-     */
-        quantity: number;
+    * @minimum 0
+    * @exclusiveMinimum true
+    * @maximum 10
+    * @exclusiveMaximum false
+    * @multipleOf 2
+    */
+    quantity: number;
 }
