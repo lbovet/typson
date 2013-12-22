@@ -22,7 +22,8 @@ interface Category {
     /** Uniquely identifies the category */
         name: string;
 
-    /** Classification level from 1 to 5 (highest) */
+    /** Classification level from 1 to 5 (highest)
+     * @type integer */
         level: number;
 }
 

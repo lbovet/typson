@@ -30,7 +30,7 @@
     var api = {};
 
     var primitiveTypes = [ "string", "number", "boolean" ];
-    var validationKeywords = [ "minimum", "exclusiveMinimum", "maximum", "exclusiveMaximum", "multipleOf", "minLength", "maxLength", "format", "pattern", "minItems", "maxItems", "uniqueItems" ];
+    var validationKeywords = [ "type", "minimum", "exclusiveMinimum", "maximum", "exclusiveMaximum", "multipleOf", "minLength", "maxLength", "format", "pattern", "minItems", "maxItems", "uniqueItems" ];
     var annotedValidationKeywordPattern = /@[a-z]+\s*[^@\s]+/gi;
 
     /**
@@ -73,8 +73,9 @@
         definition.properties = {};
         _.each(type.members.members, function (variable) {
             var property = definition.properties[variable.id.actualText] = {};
-            var variableType = variable.typeExpr.term.actualText;
             copyComment(variable, property);
+            var overridenType = property.type;
+            var variableType = variable.typeExpr.term.actualText;
             var propertyType = null;
 
             if (variable.typeExpr.getFlags() & 8 /* todo: find constant */) {
@@ -89,7 +90,7 @@
         	} else if (primitiveTypes.indexOf(variableType) == -1) {
         		propertyType.$ref = variableType;
             } else {
-                propertyType.type = variableType;
+                propertyType.type = overridenType || variableType;
             }
         });
 	}
