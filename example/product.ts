@@ -1,5 +1,7 @@
 /// <reference path="misc/dimension.ts"/>
 
+enum Origin { Local, Imported }
+
 interface Product {
     /** Uniquely defines the product
      * @pattern [A-Z][a-z][0-9]_
@@ -11,6 +13,9 @@ interface Product {
 
     /** Classification */
         category: Category;
+        
+    /** Where is it from? */
+		origin: Origin;
 }
 
 interface Category {
@@ -23,8 +28,5 @@ interface Category {
 
 interface CategoryIndex {
     categories: { [key: string]: Category };
-
     products: { [key: string]: Product[] };
-
 }
-

@@ -42,44 +42,78 @@
         return Q.promise(function (resolve) {
             typson.tree(uri).done(function (tree) {
                 TypeScript = typson.TypeScript;
-                var definitions = {};
+                var interfacesDefinitions = {};
+                var enumDefinitions = {};
                 _.each(tree, function (script) {
                     _.each(script.moduleElements.members, function (type) {
                         if (type.nodeType() == TypeScript.NodeType.InterfaceDeclaration) {
-                            var definition = definitions[type.name.actualText] = {};
-                            definition.id = type.name.actualText;
-                            copyComment(type, definition);
-                            definition.properties = {};
-                            _.each(type.members.members, function (variable) {
-                                var property = definition.properties[variable.id.actualText] = {};
-                                var variableType = variable.typeExpr.term.actualText;
-                                copyComment(variable, property);
-                                var propertyType = null;
-
-                                //TODO: to implement schema generation for map declaration
-                                //TODO: to implement schema generation for enum declaration
-
-                                if (variable.typeExpr.getFlags() & 8 /* todo: find constant */) {
-                                    property.type = "array";
-                                    propertyType = property.items = {};
-                                } else {
-                                    propertyType = property;
-                                }
-
-                                if (primitiveTypes.indexOf(variableType) == -1) {
-                                    propertyType.$ref = variableType;
-                                } else {
-                                    propertyType.type = variableType;
-                                }
-                            });
+                        	handleInterfaceDeclaration(type, interfacesDefinitions, enumDefinitions);
+                        }
+                        else if (type.nodeType() == TypeScript.NodeType.ModuleDeclaration) {
+                        	handleEnumDeclaration(type, enumDefinitions);
                         }
                     });
                 });
-                resolve(definitions);
+                resolve(interfacesDefinitions);
             });
         });
     };
+    
+    /**
+     * Handles interface declaration and registers it in the global set of interfaces
+     *
+     * @param type {object} the source AST node
+     * @param interfacesDefinitions {array} the set of handled interface declarations
+     * @param enumDefinitions {array} the set of handled enum declarations
+     */
+    function handleInterfaceDeclaration(type, interfacesDefinitions, enumDefinitions) {
+        var definition = interfacesDefinitions[type.name.actualText] = {};
+        definition.id = type.name.actualText;
+        copyComment(type, definition);
+        definition.properties = {};
+        _.each(type.members.members, function (variable) {
+            var property = definition.properties[variable.id.actualText] = {};
+            var variableType = variable.typeExpr.term.actualText;
+            copyComment(variable, property);
+            var propertyType = null;
 
+            if (variable.typeExpr.getFlags() & 8 /* todo: find constant */) {
+                property.type = "array";
+                propertyType = property.items = {};
+            } else {
+                propertyType = property;
+            }
+
+        	if (enumDefinitions[variableType]) {
+        		property.enum = enumDefinitions[variableType].enumeration;
+        	} else if (primitiveTypes.indexOf(variableType) == -1) {
+        		propertyType.$ref = variableType;
+            } else {
+                propertyType.type = variableType;
+            }
+        });
+	}
+    
+    /**
+     * Handles enum declaration and registers it in the global set of enums
+     *
+     * @param type {object} the source AST node
+     * @param enumDefinitions {array} the set of handled enum declarations
+     */
+    function handleEnumDeclaration(type, enumDefinitions) {
+	    var definition = enumDefinitions[type.name.actualText] = {};
+	    definition.enumeration = [];
+	    _.each(type.members.members, function (declaration) {
+	    	definition.enumeration.push(declaration.declaration.declarators.members[0].id.actualText);
+	    });
+	}
+
+    /**
+     * Extracts the description and the validation keywords from a comment
+     *
+     * @param from {object} the source AST node
+     * @param to {object} the destination variable or definition.
+     */
     function copyComment(from, to) {
         var comments = from.docComments();
 
