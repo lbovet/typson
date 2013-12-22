@@ -1,0 +1,33 @@
+{
+    "name": "typson",
+    "version": "0.1.0",
+    "author": "Laurent Bovet <laurent.bovet@windmaster.ch>",
+    "description": "generates json-schema from TypeScript declarations",
+    "contributors": [
+        {
+            "name": "Olivier von Dach"
+        }
+    ],
+    "bin": {
+        "typson": "./typson"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/lbovet/typson.git"
+    },
+    "keywords": [
+        "typescript",
+        "json",
+        "schema"
+    ],
+    "dependencies" : {
+        "underscore": "1.5.x",
+        "q"         : "0.9.x",
+        "superagent": "0.15.x",
+        "requirejs" : "2.1.x"
+    },
+    "license": "Apache 2.0",
+    "engines": {
+        "node": ">=0.9.7"
+    }
+}

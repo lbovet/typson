@@ -1,8 +1,10 @@
 interface Dimension {
     /** Width in cm */
-    width: number;
+        width: number;
+
     /** Height in cm */
-    height: number;
+        height: number;
+
     /** Length in cm */
-    length:  number;
+        length:  number;
 }

@@ -14,8 +14,36 @@
  * limitations under the License.
  */
 
-define([ "lib/jquery.js", "lib/typescriptServices" ], function () {
-    var exports = {};
+(function (definition) {
+    // CommonJS
+    if (typeof exports === "object") {
+        module.exports = definition(require('underscore'), require('q'));
+        // RequireJS
+    } else if (typeof define === "function" && define.amd) {
+        return define(["lib/underscore", "lib/q", "lib/superagent"], definition);
+    }
+})(function (underscore, Q, request) {
+    if (underscore) {
+        _ = underscore;
+    }
+    var api = {}
+
+    var tsLoaded = Q.defer();
+    api.ready = tsLoaded.promise;
+
+    if (typeof window === 'undefined') { // assuming node.js
+        var requirejs = require('requirejs');
+    } else {
+        var requirejs = require;
+    }
+
+    var TypeScript;
+    requirejs(["lib/typescriptServices"], function (ts) {
+        TypeScript = ts;
+        api.TypeScript = ts;
+        tsLoaded.resolve();
+    });
+
 
     /**
      * Loads a type script from a URI, compile it and returns a symbolic tree.
@@ -24,78 +52,108 @@ define([ "lib/jquery.js", "lib/typescriptServices" ], function () {
      * @param uri {string} Where to load the script from.
      * @returns {promise} Resolve to a map {scriptPath -> AST }
      */
-    exports.tree = function (uri) {
-        var d = $.Deferred();
-        var context = {
-            compiler: new TypeScript.TypeScriptCompiler(),
-            files: [],
-            syntaxError: false
-        };
-        // Load files into the compiler
-        load(context, [uri])
-            .done(function () {
-                if (!context.syntaxError) {
-                    var compiler = context.compiler;
-                    // Perform type checking
-                    compiler.pullTypeCheck();
-                    var diagnostics = {
-                        addDiagnostic: function (diagnostic) {
-                            console.warn(diagnostic.fileName() + ": " + diagnostic.message());
+    api.tree = function (uri) {
+        return Q.promise(function (resolve, fail) {
+            api.ready.done(function () {
+                var context = {
+                    compiler: new TypeScript.TypeScriptCompiler(),
+                    files: [],
+                    syntaxError: false
+                };
+                // Load files into the compiler
+                load(context, [uri])
+                    .then(function () {
+                        if (!context.syntaxError) {
+                            var compiler = context.compiler;
+                            // Perform type checking
+                            compiler.pullTypeCheck();
+                            var diagnostics = {
+                                addDiagnostic: function (diagnostic) {
+                                    console.warn(diagnostic.fileName() + ": " + diagnostic.message());
+                                }
+                            };
+                            var fileNames = compiler.fileNameToDocument.getAllKeys();
+                            for (var i = 0; i < fileNames.length; i++) {
+                                var fileName = fileNames[i];
+                                var semanticDiagnostics = compiler.getSemanticDiagnostics(fileName);
+                                if (semanticDiagnostics.length > 0) {
+                                    compiler.reportDiagnostics(semanticDiagnostics, diagnostics);
+                                }
+                            }
+                            // Build result map
+                            var scripts = {};
+                            _.map(context.files, function (file) {
+                                scripts[file] = compiler.getScript(file)
+                            });
+                            resolve(scripts);
+                        } else {
+                            fail();
                         }
-                    };
-                    var fileNames = compiler.fileNameToDocument.getAllKeys();
-                    for (var i = 0; i < fileNames.length; i++) {
-                        var fileName = fileNames[i];
-                        var semanticDiagnostics = compiler.getSemanticDiagnostics(fileName);
-                        if (semanticDiagnostics.length > 0) {
-                            compiler.reportDiagnostics(semanticDiagnostics, diagnostics);
-                        }
-                    }
-                    // Build result map
-                    var scripts = {};
-                    $.map(context.files, function (file) {
-                        scripts[file] = compiler.getScript(file)
+                    }, function () {
+                        fail();
                     });
-                    console.debug(scripts);
-                    d.resolve(scripts);
-                } else {
-                    d.fail();
-                }
-            })
-            .fail(function () {
-                d.fail();
             });
-        return d.promise();
+        });
     };
+
+    function loadScript(location) {
+        if (location.indexOf("\n") != -1) {
+            var d = Q.defer();
+            d.resolve(location);
+            return d.promise;
+        } else {
+            return Q.promise(function (resolve, fail) {
+                if (typeof window !== 'undefined' || /^https?:\/\//.test(location)) {
+                    if (request === undefined) {
+                        request = require('superagent')
+                    }
+                    var req = request.get(location);
+                    if(req.buffer) {
+                        req.buffer();
+                    }
+                    req.end(function (res) {
+                        resolve(res.text);
+                    });
+                } else { // Assuming node.js
+                    var fs = require('fs');
+                    fs.readFile(location, "utf8", function (err, data) {
+                        if(!err) {
+                            resolve(data);
+                        } else {
+                            fail(err);
+                        }
+                    });
+                }
+            });
+        }
+    }
 
     /**
      * Loads the given files and dependencies recursively in the compiler.
      *
      * @param context {Object} Contains the compiler, file names and markers.
-     * @param paths {Array<string>} The paths of the files relative to the from path
+     * @param scripts {Array<string>} The paths of the files relative to the from path or scripts
      * @returns {promise} Resolved when all paths and dependencies are loaded and compiled
      */
-    function load(context, paths) {
+    function load(context, scripts) {
         var compiler = context.compiler;
         // Create an array of promises
-        var promises = $.map(paths, function (path) {
+        var d = Q.defer();
+        var promises = _.map(scripts, function (locationOrScript) {
             // Each promise loads and adds a file to the compiler
-            if (context.files.indexOf(path) == -1) {
-                context.files.push(path);
-                console.log("Loading " + path);
-                return $.ajax({ url: path})
+            if (context.files.indexOf(locationOrScript) == -1) {
+                context.files.push(locationOrScript);
+                return loadScript(locationOrScript)
                     .then(function (script) {
-                        var d = $.Deferred();
                         // Pre-process to find referenced files
                         var snapshot = TypeScript.ScriptSnapshot.fromString(script);
-                        var referencedFiles = $.map(TypeScript.getReferencedFiles(path, snapshot), function (file) {
-                            return fullPath(path, file.path)
+                        var referencedFiles = _.map(TypeScript.getReferencedFiles(locationOrScript, snapshot), function (file) {
+                            return fullPath(locationOrScript, file.path)
                         });
                         // Start loading the referenced files
                         var referencesPromise = load(context, referencedFiles);
                         // Parse the file
-                        console.log("Adding " + path);
-                        compiler.addSourceUnit(path, snapshot, null, 0, true, referencedFiles);
+                        compiler.addSourceUnit(locationOrScript, snapshot, null, 0, true, referencedFiles);
                         var lineMap = new TypeScript.LineMap(snapshot.getLineStartPositions(), snapshot.getLength());
                         var diagnostics = {
                             addDiagnostic: function (diagnostic) {
@@ -105,18 +163,22 @@ define([ "lib/jquery.js", "lib/typescriptServices" ], function () {
                                     diagnostic.message());
                             }
                         };
-                        var syntacticDiagnostics = compiler.getSyntacticDiagnostics(path);
+                        var syntacticDiagnostics = compiler.getSyntacticDiagnostics(locationOrScript);
                         if (syntacticDiagnostics.length > 0) {
                             compiler.reportDiagnostics(syntacticDiagnostics, diagnostics);
                             context.syntaxError = true;
                         }
                         return referencesPromise;
-                    });
+                    },
+                    function(err) {
+                        console.error(err)
+                    }
+                );
             } else {
-                return $.Deferred().resolve().promise();
+                return Q(true);
             }
         });
-        return $.when.all(promises);
+        return Q.all(promises);
     }
 
     /**
@@ -150,7 +212,6 @@ define([ "lib/jquery.js", "lib/typescriptServices" ], function () {
         }
     }
 
-    // Enables to apply $.when to an array of promises
-    $.when.all = Function.prototype.apply.bind($.when, null);
-    return exports;
+    return api;
 });
+
