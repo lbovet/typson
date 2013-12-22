@@ -27,6 +27,7 @@ interface InvoiceLine {
     * @exclusiveMinimum true
     * @maximum 10
     * @exclusiveMaximum false
+    * @multipleOf 2
     */
     quantity: number;
 }

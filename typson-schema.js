@@ -69,6 +69,13 @@ define(["typson"], function(typson) {
        return d.promise();
    };
 
+   /**
+    * Extracts JSON schema information from a Typescript comment
+    *
+    * @param from {object} the source AST node
+    * @param to {object} the destination variable or definition.
+    * @returns nothing
+    */
    function copyComment(from, to) {
        var comments = from.docComments();
        
@@ -102,6 +109,7 @@ define(["typson"], function(typson) {
     *
     * @param comment {string} the full comment.
     * @param to {object} the destination variable.
+    * @returns nothing
     */
    function copyValidationKeywords(comment, to) {
 	   annotedValidationKeywordPattern.lastIndex = 0;
