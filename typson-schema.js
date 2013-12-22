@@ -117,7 +117,6 @@
      */
     function copyComment(from, to) {
         var comments = from.docComments();
-
         if (comments.length > 0) {
             var commentContent = comments.slice(-1)[0].getDocCommentTextValue();
             copyValidationKeywords(copyDescription(commentContent, to), to);
@@ -137,7 +136,7 @@
         var delimiterIndex = comment.indexOf(delimiter);
         var description = comment.slice(0, delimiterIndex < 0 ? comment.length : delimiterIndex);
         if (description.length > 0) {
-            to.description = description;
+            to.description = description.replace(/\s+$/g, '');
         }
         return delimiterIndex < 0 ? '' : comment.slice(delimiterIndex);
     }
