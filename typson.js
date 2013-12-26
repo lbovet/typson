@@ -20,7 +20,7 @@
         module.exports = definition(require('underscore'), require('q'));
         // RequireJS
     } else if (typeof define === "function" && define.amd) {
-        return define(["lib/underscore", "lib/q", "lib/superagent"], definition);
+        return define(["lib/underscore", "lib/q", "lib/superagent", "lib/typescriptServices"], definition);
     }
 })(function (underscore, Q, request) {
     if (underscore) {
