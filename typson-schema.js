@@ -111,9 +111,9 @@
 	    		var superDefinition = definitions.interfaces[superType.actualText];
 	    		// does the provisionning if a definition exists for the current super type
 	    		if (superDefinition) {
-	    			_.each(Object.keys(superDefinition.properties), function (superKey) {
+	    			for(var superKey in superDefinition.properties) {
 	    				definition.properties[superKey] = superDefinition.properties[superKey];
-	    			});
+	    			}
 	    			mergeInheritedProperties(superType, definition, definitions);
 	    		}
 	    	});
