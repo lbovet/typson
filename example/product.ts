@@ -18,6 +18,10 @@ interface Product {
 		origin: Origin;
 }
 
+interface WeightedProduct extends Product {
+		weight: number;
+}
+
 interface Category {
     /** Uniquely identifies the category */
         name: string;
