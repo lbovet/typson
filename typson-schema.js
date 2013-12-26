@@ -42,35 +42,39 @@
         return Q.promise(function (resolve) {
             typson.tree(uri).done(function (tree) {
                 TypeScript = typson.TypeScript;
-                var interfacesDefinitions = {};
-                var enumDefinitions = {};
+                var definitions = {
+                		interfaces: {},
+                		enums: {}
+                };
                 _.each(tree, function (script) {
                     _.each(script.moduleElements.members, function (type) {
                         if (type.nodeType() == TypeScript.NodeType.InterfaceDeclaration) {
-                        	handleInterfaceDeclaration(type, interfacesDefinitions, enumDefinitions);
+                        	handleInterfaceDeclaration(type, definitions);
                         }
                         else if (type.nodeType() == TypeScript.NodeType.ModuleDeclaration) {
-                        	handleEnumDeclaration(type, enumDefinitions);
+                        	handleEnumDeclaration(type, definitions);
                         }
                     });
                 });
-                resolve(interfacesDefinitions);
+                resolve(definitions.interfaces);
             });
         });
     };
     
     /**
-     * Handles interface declaration and registers it in the global set of interfaces
+     * Handles interface declaration as new definition and registers it in the global set of interface definitions
      *
-     * @param type {object} the source AST node
-     * @param interfacesDefinitions {array} the set of handled interface declarations
-     * @param enumDefinitions {array} the set of handled enum declarations
+     * @param type {object} the TypeScript AST node associated to the interface declaration
+     * @param definitions {object} the set of handled interface and enum definitions
      */
-    function handleInterfaceDeclaration(type, interfacesDefinitions, enumDefinitions) {
-        var definition = interfacesDefinitions[type.name.actualText] = {};
+    function handleInterfaceDeclaration(type, definitions) {
+        var definition = definitions.interfaces[type.name.actualText] = {};
         definition.id = type.name.actualText;
         copyComment(type, definition);
+        
         definition.properties = {};
+        mergeInheritedProperties(type, definition, definitions);
+        
         _.each(type.members.members, function (variable) {
             var property = definition.properties[variable.id.actualText] = {};
             copyComment(variable, property);
@@ -85,8 +89,8 @@
                 propertyType = property;
             }
 
-        	if (enumDefinitions[variableType]) {
-        		property.enum = enumDefinitions[variableType].enumeration;
+        	if (definitions.enums[variableType]) {
+        		property.enum = definitions.enums[variableType].enumeration;
         	} else if (primitiveTypes.indexOf(variableType) == -1) {
         		propertyType.$ref = variableType;
             } else {
@@ -96,13 +100,35 @@
 	}
     
     /**
-     * Handles enum declaration and registers it in the global set of enums
-     *
-     * @param type {object} the source AST node
-     * @param enumDefinitions {array} the set of handled enum declarations
+     * Visits every super type extended by the given type recursively and provisions the given definition with the properties of the associated super definitions.
+     * 
+     * @param type {object} the TypeScript AST node associated to the interface declaration 
+     * @param definition {object} the definition to be provisionned
+     * @param definitions {object} the set of handled interface and enum definitions
      */
-    function handleEnumDeclaration(type, enumDefinitions) {
-	    var definition = enumDefinitions[type.name.actualText] = {};
+    function mergeInheritedProperties(type, definition, definitions) {
+    	if (type.extendsList) {
+	    	_.each(type.extendsList.members, function (superType) {
+	    		var superDefinition = definitions.interfaces[superType.actualText];
+	    		// does the provisionning if a definition exists for the current super type
+	    		if (superDefinition) {
+	    			for(var superKey in superDefinition.properties) {
+	    				definition.properties[superKey] = superDefinition.properties[superKey];
+	    			}
+	    			mergeInheritedProperties(superType, definition, definitions);
+	    		}
+	    	});
+    	}    	
+    }
+    
+    /**
+     * Handles enum declaration as new definition and registers it in the global set of enum definitions
+     *
+     * @param type {object} the TypeScript AST node associated to the enum declaration
+     * @param definitions {object} the set of handled interface and enum definitions
+     */
+    function handleEnumDeclaration(type, definitions) {
+	    var definition = definitions.enums[type.name.actualText] = {};
 	    definition.enumeration = [];
 	    _.each(type.members.members, function (declaration) {
 	    	definition.enumeration.push(declaration.declaration.declarators.members[0].id.actualText);
