@@ -14,25 +14,27 @@
  * limitations under the License.
  */
 
-var oldRequire = require;
-window.require = requirejs;
-require(["typson-schema"], function(typson) {
-    SwaggerApi.modelLoader = function(api, done) {
-        if(api.tsModels) {
-            window.require = requirejs;
-            typson.definitions(api.tsModels).done(function(definitions) {
-                api.models = api.models || {};
-                $.extend(api.models, definitions);
+(function() {
+    var oldRequire = require;
+    window.require = requirejs;
+    require(["typson-schema"], function(typson) {
+        SwaggerApi.modelLoader = function(api, done) {
+            if(api.tsModels) {
+                window.require = requirejs;
+                typson.definitions(api.tsModels).done(function(definitions) {
+                    api.models = api.models || {};
+                    $.extend(api.models, definitions);
+                    window.require = oldRequire;
+                    done();
+                });
+            } else {
                 window.require = oldRequire;
                 done();
-            });
-        } else {
-            window.require = oldRequire;
-            done();
+            }
         }
-    }
-    $(function() {
-        window.require = oldRequire;
-        window.typsonReady.resolve();
+        $(function() {
+            window.require = oldRequire;
+            window.typsonReady.resolve();
+        });
     });
-});
+})();
