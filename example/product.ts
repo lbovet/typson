@@ -32,5 +32,4 @@ interface Category {
 
 interface CategoryIndex {
     categories: { [key: string]: Category };
-    products: { [key: string]: Product[] };
 }

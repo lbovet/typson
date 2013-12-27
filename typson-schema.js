@@ -81,13 +81,22 @@
             copyComment(variable, property);
             var propertyType = null;
 
+            //arrays
             if (variable.typeExpr.getFlags() & 8 /* todo: find constant */) {
                 property.type = "array";
                 propertyType = property.items = {};
-            } else {
+            }
+            //maps
+            else if (variable.typeExpr.term.getFlags() & 8 /* todo: find constant */) {
+            	property.type = "object";
+            	propertyType = property.additionalProperties = {};
+            	variableType = variable.typeExpr.term.members.members[0].returnTypeAnnotation.term.actualText;
+            } 
+            //other
+            else {
                 propertyType = property;
             }
-
+            
         	if (definitions.enums[variableType]) {
         		property.enum = definitions.enums[variableType].enumeration;
         	} else if (primitiveTypes.indexOf(variableType) == -1) {
@@ -137,7 +146,7 @@
     /**
      * Extracts the description and the validation keywords from a comment
      *
-     * @param from {object} the source AST node
+     * @param from {object} the TypeScript AST node
      * @param to {object} the destination variable or definition.
      */
     function copyComment(from, to) {
