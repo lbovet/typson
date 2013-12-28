@@ -139,12 +139,12 @@
 	    			}
 	    			// merges required
 	    			if (superDefinition.required) {
-	    				for (var idx in superDefinition.required) {
+	    				_.each(superDefinition.required, function (requiredSuperPropertyName) {
 	    	            	if (!definition.required) {
 	    	            		definition.required = [];
 	    	            	}
-	    	            	definition.required.push(superDefinition.required[idx]);
-	    				}
+	    	            	definition.required.push(requiredSuperPropertyName);
+	    				});
 	    			}
 	    		}
 	    	});
