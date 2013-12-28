@@ -32,6 +32,7 @@
     var primitiveTypes = [ "string", "number", "boolean" ];
     var validationKeywords = [ "type", "minimum", "exclusiveMinimum", "maximum", "exclusiveMaximum", "multipleOf", "minLength", "maxLength", "format", "pattern", "minItems", "maxItems", "uniqueItems" ];
     var annotedValidationKeywordPattern = /@[a-z]+\s*[^@\s]+/gi;
+    var TypescriptASTFlags = { 'optionalName' : 4, 'arrayType' : 8 };
 
     /**
      * Creates json-schema type definitions from a type script.
@@ -81,14 +82,21 @@
             var overridenType = property.type;
             var variableType = variable.typeExpr.term.actualText;
             var propertyType = null;
-
+            
+            //required
+            if (!(variable.id.getFlags() & TypescriptASTFlags.optionalName)) {
+            	if (!definition.required) {
+            		definition.required = [];
+            	}
+            	definition.required.push(variable.id.actualText);
+            }
             //arrays
-            if (variable.typeExpr.getFlags() & 8 /* todo: find constant */) {
+            if (variable.typeExpr.getFlags() & TypescriptASTFlags.arrayType) {
                 property.type = "array";
                 propertyType = property.items = {};
             }
             //maps
-            else if (variable.typeExpr.term.getFlags() & 8 /* todo: find constant */) {
+            else if (variable.typeExpr.term.getFlags() & TypescriptASTFlags.arrayType) {
             	property.type = "object";
             	propertyType = property.additionalProperties = {};
             	variableType = variable.typeExpr.term.members.members[0].returnTypeAnnotation.term.actualText;
@@ -98,9 +106,12 @@
                 propertyType = property;
             }
             
+            //enums
         	if (definitions.enums[variableType]) {
         		property.enum = definitions.enums[variableType].enumeration;
-        	} else if (primitiveTypes.indexOf(variableType) == -1) {
+        	} 
+        	//other
+        	else if (primitiveTypes.indexOf(variableType) == -1) {
         		propertyType.$ref = variableType;
             } else {
                 propertyType.type = overridenType || variableType;
@@ -121,10 +132,21 @@
 	    		var superDefinition = definitions.interfaces[superType.actualText];
 	    		// does the provisionning if a definition exists for the current super type
 	    		if (superDefinition) {
+	    			// recursive call
+	    			mergeInheritedProperties(superType, definition, definitions);
+	    			// merges properties
 	    			for(var superKey in superDefinition.properties) {
 	    				definition.properties[superKey] = superDefinition.properties[superKey];
 	    			}
-	    			mergeInheritedProperties(superType, definition, definitions);
+	    			// merges required
+	    			if (superDefinition.required) {
+	    				_.each(superDefinition.required, function (requiredSuperPropertyName) {
+	    	            	if (!definition.required) {
+	    	            		definition.required = [];
+	    	            	}
+	    	            	definition.required.push(requiredSuperPropertyName);
+	    				});
+	    			}
 	    		}
 	    	});
     	}    	
