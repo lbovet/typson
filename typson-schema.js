@@ -32,7 +32,6 @@
     var primitiveTypes = [ "string", "number", "boolean" ];
     var validationKeywords = [ "minimum", "exclusiveMinimum", "maximum", "exclusiveMaximum", "multipleOf", "minLength", "maxLength", "format", "pattern", "minItems", "maxItems", "uniqueItems" ];
     var annotedValidationKeywordPattern = /@[a-z]+\s*[^@\s]+/gi;
-    var optionalPropertyPattern = /[a-z]+\?/gi;
     var TypescriptASTFlags = { 'optionalName' : 4, 'arrayType' : 8 };
 
     /**
