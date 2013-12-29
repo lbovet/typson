@@ -1,6 +1,6 @@
 {
     "name": "typson",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "author": "Laurent Bovet <laurent.bovet@windmaster.ch>",
     "description": "generates json-schema from TypeScript declarations",
     "contributors": [

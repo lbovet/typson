@@ -55,6 +55,10 @@ instead of jQuery's `$(function() {` initializer.
 
 Then, just replace the `models` section of your API file with a `tsModels` property containing the URL pointing to the type script defining the models.
 
+## Similar Projects
+
+* https://github.com/ysangkok/typescript-interface-to-jsonschema
+* http://blog2.vorburger.ch/2013/11/devoxx-hackathon-2-typescript-ide-w.html
 
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/lbovet/typson/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 
