@@ -37,11 +37,12 @@
     /**
      * Creates json-schema type definitions from a type script.
      *
-     * @param uri {string} Points to the source type script.
+     * @param script {string} URI pointing to the source type script or the script itself.
+     * @param refPath {string} A path to prepend to $ref references.
      */
-    api.definitions = function (uri) {
+    api.definitions = function (script, refPath) {
         return Q.promise(function (resolve) {
-            typson.tree(uri).done(function (tree) {
+            typson.tree(script).done(function (tree) {
                 TypeScript = typson.TypeScript;
                 var definitions = {
                 		interfaces: {},
@@ -50,7 +51,7 @@
                 _.each(tree, function (script) {
                     _.each(script.moduleElements.members, function (type) {
                         if (type.nodeType() == TypeScript.NodeType.InterfaceDeclaration) {
-                        	handleInterfaceDeclaration(type, definitions);
+                        	handleInterfaceDeclaration(type, definitions, refPath);
                         }
                         else if (type.nodeType() == TypeScript.NodeType.ModuleDeclaration) {
                         	handleEnumDeclaration(type, definitions);
@@ -61,14 +62,36 @@
             });
         });
     };
-    
+
+    /**
+     * Generates a schema from a type script.
+     *
+     * @param script {string} URI pointing to the source type script or the script itself.
+     * @param type {string} The type to generate the schema from.
+     * @param [id] {string} Schema id.
+     */
+    api.schema = function (script, type, id) {
+        return Q.promise(function (resolve) {
+            api.definitions(script, "#/definitions").done(function(definitions) {
+               var schema = {};
+               schema.$schema = "http://json-schema.org/draft-04/schema#";
+               _.extend(schema, definitions[type]);
+               delete definitions[type];
+               if(id) {
+                   schema.id = id;
+               }
+               resolve(schema);
+               schema.definitions = definitions;
+            });
+        });
+    }
     /**
      * Handles interface declaration as new definition and registers it in the global set of interface definitions
      *
      * @param type {object} the TypeScript AST node associated to the interface declaration
      * @param definitions {object} the set of handled interface and enum definitions
      */
-    function handleInterfaceDeclaration(type, definitions) {
+    function handleInterfaceDeclaration(type, definitions, refPath) {
         var definition = definitions.interfaces[type.name.actualText] = {};
         definition.id = type.name.actualText;
         copyComment(type, definition);
@@ -112,7 +135,7 @@
         	} 
         	//other
         	else if (primitiveTypes.indexOf(variableType) == -1) {
-        		propertyType.$ref = variableType;
+        		propertyType.$ref = refPath? refPath+"/"+variableType: variableType;
             } else {
                 propertyType.type = overridenType || variableType;
             }
@@ -223,17 +246,24 @@
         }
     }
 
-    api.exec = function(script) {
-        api.definitions(script).done(function(definitions) {
-            require('sys').print(JSON.stringify(definitions, null, 2));
-        });
+    api.exec = function(script, type) {
+        var sys = require('sys');
+        if(type) {
+            api.schema(script, type).done(function(schema) {
+                sys.print(JSON.stringify(schema, null, 2));
+            });
+        } else {
+            api.definitions(script).done(function(definitions) {
+                sys.print(JSON.stringify(definitions, null, 2));
+            });
+        }
     }
 
     if (typeof window === 'undefined' && require.main === module) {
         if (process.argv[2]) {
-            api.exec(process.argv[2]);
+            api.exec(process.argv[2], process.argv[3]);
         } else {
-            require('sys').print("Usage: node typson-schema.js <url-or-path-to-type-script-file>\n");
+            require('sys').print("Usage: node typson-schema.js <url-or-path-to-type-script-file> [type]\n");
         }
     } else {
         return api;
