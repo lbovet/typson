@@ -96,6 +96,12 @@
         });
     };
 
+    function convertInlineComments(script) {
+        var result =  script.replace(/^\s+([^\/]*)\/\/(.*)$/gm, "/** $2 */ $1 ");
+        console.log(result)
+        return result
+    }
+
     function loadScript(location) {
         if (location.indexOf("\n") != -1) {
             var d = Q.defer();
@@ -112,13 +118,13 @@
                         req.buffer();
                     }
                     req.end(function (res) {
-                        resolve(res.text);
+                        resolve(convertInlineComments(res.text));
                     });
                 } else { // Assuming node.js
                     var fs = require('fs');
                     fs.readFile(location, "utf8", function (err, data) {
                         if(!err) {
-                            resolve(data);
+                            resolve(convertInlineComments(data));
                         } else {
                             fail(err);
                         }
