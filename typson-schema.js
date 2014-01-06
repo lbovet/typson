@@ -85,6 +85,7 @@
             });
         });
     }
+
     /**
      * Handles interface declaration as new definition and registers it in the global set of interface definitions
      *
@@ -131,7 +132,8 @@
             
             //enums
         	if (definitions.enums[variableType]) {
-        		property.enum = definitions.enums[variableType].enumeration;
+        		property.enum = _.keys(definitions.enums[variableType].enumeration);
+                addEnumDescription(definitions.enums[variableType].enumeration, property);
         	} 
         	//other
         	else if (primitiveTypes.indexOf(variableType) == -1) {
@@ -183,9 +185,11 @@
      */
     function handleEnumDeclaration(type, definitions) {
 	    var definition = definitions.enums[type.name.actualText] = {};
-	    definition.enumeration = [];
+	    definition.enumeration = {};
 	    _.each(type.members.members, function (declaration) {
-	    	definition.enumeration.push(declaration.declaration.declarators.members[0].id.actualText);
+            var comment = declaration.declaration.declarators.members[0].docComments().slice(-1)[0];
+            var commentText = comment ? comment.getDocCommentTextValue() : "";
+	    	definition.enumeration[declaration.declaration.declarators.members[0].id.actualText] = commentText;
 	    });
 	}
 
@@ -245,6 +249,23 @@
             }
         }
     }
+
+
+    function addEnumDescription(enumeration, property) {
+        if(enumeration && _.values(enumeration).join("")) {
+            var values = ["Value"];
+            values = values.concat(_.keys(enumeration));
+            var max = _.max(values, function(value) { return value.length; }).length;
+            var table = "\n\n| "+values[0] + Array(max+3-values[0].length).join(" ") + "| Description";
+            table += "\n|-";
+            _.each(enumeration, function(comment, value) {
+                table += "\n| `"+value+"`"+ Array(max+1-value.length).join(" ") + "|" + (comment ? " "+comment : "|");
+            });
+            property.description += table;
+            console.log(table);
+        }
+    }
+
 
     api.exec = function(script, type) {
         var sys = require('sys');

@@ -97,7 +97,7 @@
     };
 
     function convertInlineComments(script) {
-        var result =  script.replace(/^\s+([^\/]*)\/\/(.*)$/gm, "/** $2 */ $1 ");
+        var result =  script.replace(/^[ \t]+([^\/\n]+)\/\/([^\n]+)$/gm, "/** $2 */ $1 ");
         console.log(result)
         return result
     }
@@ -113,7 +113,7 @@
                     if (request === undefined) {
                         request = require('superagent')
                     }
-                    var req = request.get(location);
+                    var req = request.get(location).query("_="+new Date().getTime());
                     if(req.buffer) {
                         req.buffer();
                     }

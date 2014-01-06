@@ -16,11 +16,9 @@ interface Invoice {
      * @minItems 1
      * @maxItems 50
      */
-
         lines: InvoiceLine[];
 
-    /** Total dimension of the order */
-        dimension: Dimension;
+        dimension: Dimension; // Total dimension of the order
 }
 
 interface InvoiceLine {

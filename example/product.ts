@@ -1,9 +1,13 @@
 /// <reference path="misc/dimension.ts"/>
 
-enum Origin { Local, Imported }
+enum Origin {
+    Local, // From here
+    Imported // From elsewhere
+}
 
 interface Product {
-    /** Uniquely defines the product
+    /**
+     * Uniquely defines the product
      * @pattern [A-Z][a-z][0-9]_
      */
         name: string;
@@ -13,13 +17,13 @@ interface Product {
 
     /** Classification */
         category: Category;
-        
+
     /** Where is it from? */
-		origin: Origin;
+        origin: Origin;
 }
 
 interface WeightedProduct extends Product {
-		weight: number;
+    weight: number;
 }
 
 interface Category {
