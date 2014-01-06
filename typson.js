@@ -97,9 +97,7 @@
     };
 
     function convertInlineComments(script) {
-        var result =  script.replace(/^[ \t]+([^\/\n]+)\/\/([^\n]+)$/gm, "/** $2 */ $1 ");
-        console.log(result)
-        return result
+        return script.replace(/^[ \t]+([^\/\n]+)\/\/([^\n]+)$/gm, "/** $2 */ $1 ");
     }
 
     function loadScript(location) {
@@ -118,13 +116,13 @@
                         req.buffer();
                     }
                     req.end(function (res) {
-                        resolve(convertInlineComments(res.text));
+                        resolve(res.text);
                     });
                 } else { // Assuming node.js
                     var fs = require('fs');
                     fs.readFile(location, "utf8", function (err, data) {
                         if(!err) {
-                            resolve(convertInlineComments(data));
+                            resolve(data);
                         } else {
                             fail(err);
                         }
@@ -151,6 +149,7 @@
                 context.files.push(locationOrScript);
                 return loadScript(locationOrScript)
                     .then(function (script) {
+                        script = convertInlineComments(script);
                         // Pre-process to find referenced files
                         var snapshot = TypeScript.ScriptSnapshot.fromString(script);
                         var referencedFiles = _.map(TypeScript.getReferencedFiles(locationOrScript, snapshot), function (file) {

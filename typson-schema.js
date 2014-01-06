@@ -262,7 +262,6 @@
                 table += "\n| `"+value+"`"+ Array(max+1-value.length).join(" ") + "|" + (comment ? " "+comment : "|");
             });
             property.description += table;
-            console.log(table);
         }
     }
 
