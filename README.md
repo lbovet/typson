@@ -43,17 +43,19 @@ Generated definitions are compatible with Swagger, you can copy Typson's output 
 You can make [Swagger UI](https://github.com/wordnik/swagger-ui) read type definitions directly by integrating Typson, you will need a modified version of [swagger.js](https://github.com/lbovet/swagger-js/tree/model-loader).
 This version just adds the capability to load the models from another source.
 
+See how it looks like in the [Swagger Typson example](http://lbovet.github.io/swagger-ui/dist/index.html) (Note: this example also illustrate [Docson](https://github.com/lbovet/docson) integration in Swagger).
+
 Then, adapt Swagger UI's `index.html` to
 
-1. Include Typson integration `<script src="typson-swagger.js"></script>` _after_ the main inline script.
-2. Initialize Swagger UI only once Typson is ready:
-```
-    var typsonReady = $.Deferred();
-    typsonReady.done(function () {
-```
-instead of jQuery's `$(function() {` initializer.
+1. Include Typson integration `<script src="typson-swagger.js"></script>` [_after_ the main inline script](https://github.com/lbovet/swagger-ui/blob/3f37722b03db6c48cc2a8460df26dda5f4d6f8e4/src/main/html/index.html#L63).
+2. Initialize Swagger UI [only once Typson is ready](https://github.com/lbovet/swagger-ui/blob/3f37722b03db6c48cc2a8460df26dda5f4d6f8e4/src/main/html/index.html#L30-L31):
+  ```
+      var typsonReady = $.Deferred();
+      typsonReady.done(function () {
+  ```
+  instead of jQuery's `$(function() {` initializer.
 
-Then, just replace the `models` section of your API file with a `tsModels` property containing the URL pointing to the type script defining the models.
+Then, just replace the `models` section of your API file with a `tsModels` property [containing the URL pointing to the type script defining the models](https://github.com/lbovet/swagger-ui/blob/3f37722b03db6c48cc2a8460df26dda5f4d6f8e4/dist/api/test#L65).
 
 ## Similar Projects
 
