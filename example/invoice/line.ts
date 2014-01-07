@@ -18,7 +18,9 @@ interface Invoice {
      */
         lines: InvoiceLine[];
 
-        dimension: Dimension; // Total dimension of the order
+    dimension: Dimension; // Total dimension of the order
+
+    blob: any; // Additional stuff
 }
 
 interface InvoiceLine {
@@ -26,11 +28,11 @@ interface InvoiceLine {
     product: Product;
 
     /**
-    * @minimum 0
-    * @exclusiveMinimum true
-    * @maximum 10
-    * @exclusiveMaximum false
-    * @multipleOf 2
-    */
-    quantity: number;
+     * @minimum 0
+     * @exclusiveMinimum true
+     * @maximum 10
+     * @exclusiveMaximum false
+     * @multipleOf 2
+     */
+        quantity: number;
 }

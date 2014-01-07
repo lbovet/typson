@@ -29,7 +29,7 @@
     }
     var api = {};
 
-    var primitiveTypes = [ "string", "number", "boolean" ];
+    var primitiveTypes = [ "string", "number", "boolean", "any" ];
     var validationKeywords = [ "type", "minimum", "exclusiveMinimum", "maximum", "exclusiveMaximum", "multipleOf", "minLength", "maxLength", "format", "pattern", "minItems", "maxItems", "uniqueItems", "default" ];
     var annotedValidationKeywordPattern = /@[a-z]+\s*[^@\s]+/gi;
     var TypescriptASTFlags = { 'optionalName' : 4, 'arrayType' : 8 };
@@ -139,7 +139,9 @@
         	else if (primitiveTypes.indexOf(variableType) == -1) {
         		propertyType.$ref = refPath? refPath+"/"+variableType: variableType;
             } else {
-                propertyType.type = overridenType || variableType;
+                if(variableType !== "any") {
+                    propertyType.type = overridenType || variableType;
+                }
             }
         });
 	}
