@@ -45,16 +45,16 @@
             typson.tree(script).done(function (tree) {
                 TypeScript = typson.TypeScript;
                 var definitions = {
-                		interfaces: {},
-                		enums: {}
+                        interfaces: {},
+                        enums: {}
                 };
                 _.each(tree, function (script) {
                     _.each(script.moduleElements.members, function (type) {
                         if (type.nodeType() == TypeScript.NodeType.InterfaceDeclaration) {
-                        	handleInterfaceDeclaration(type, definitions, refPath);
+                            handleInterfaceDeclaration(type, definitions, refPath);
                         }
                         else if (type.nodeType() == TypeScript.NodeType.ModuleDeclaration) {
-                        	handleEnumDeclaration(type, definitions);
+                            handleEnumDeclaration(type, definitions);
                         }
                     });
                 });
@@ -109,10 +109,10 @@
             
             //required
             if (!(variable.id.getFlags() & TypescriptASTFlags.optionalName)) {
-            	if (!definition.required) {
-            		definition.required = [];
-            	}
-            	definition.required.push(variable.id.actualText);
+                if (!definition.required) {
+                    definition.required = [];
+                }
+                definition.required.push(variable.id.actualText);
             }
             //arrays
             if (variable.typeExpr.getFlags() & TypescriptASTFlags.arrayType) {
@@ -121,9 +121,9 @@
             }
             //maps
             else if (variable.typeExpr.term.getFlags() & TypescriptASTFlags.arrayType) {
-            	property.type = "object";
-            	propertyType = property.additionalProperties = {};
-            	variableType = variable.typeExpr.term.members.members[0].returnTypeAnnotation.term.actualText;
+                property.type = "object";
+                propertyType = property.additionalProperties = {};
+                variableType = variable.typeExpr.term.members.members[0].returnTypeAnnotation.term.actualText;
             } 
             //other
             else {
@@ -131,20 +131,20 @@
             }
             
             //enums
-        	if (definitions.enums[variableType]) {
-        		property.enum = _.keys(definitions.enums[variableType].enumeration);
+            if (definitions.enums[variableType]) {
+                property.enum = _.keys(definitions.enums[variableType].enumeration);
                 addEnumDescription(definitions.enums[variableType].enumeration, property);
-        	} 
-        	//other
-        	else if (primitiveTypes.indexOf(variableType) == -1) {
-        		propertyType.$ref = refPath? refPath+"/"+variableType: variableType;
+            } 
+            //other
+            else if (primitiveTypes.indexOf(variableType) == -1) {
+                propertyType.$ref = refPath? refPath+"/"+variableType: variableType;
             } else {
                 if(variableType !== "any") {
                     propertyType.type = overridenType || variableType;
                 }
             }
         });
-	}
+    }
     
     /**
      * Visits every super type extended by the given type recursively and provisions the given definition with the properties of the associated super definitions.
@@ -154,29 +154,29 @@
      * @param definitions {object} the set of handled interface and enum definitions
      */
     function mergeInheritedProperties(type, definition, definitions) {
-    	if (type.extendsList) {
-	    	_.each(type.extendsList.members, function (superType) {
-	    		var superDefinition = definitions.interfaces[superType.actualText];
-	    		// does the provisionning if a definition exists for the current super type
-	    		if (superDefinition) {
-	    			// recursive call
-	    			mergeInheritedProperties(superType, definition, definitions);
-	    			// merges properties
-	    			for(var superKey in superDefinition.properties) {
-	    				definition.properties[superKey] = superDefinition.properties[superKey];
-	    			}
-	    			// merges required
-	    			if (superDefinition.required) {
-	    				_.each(superDefinition.required, function (requiredSuperPropertyName) {
-	    	            	if (!definition.required) {
-	    	            		definition.required = [];
-	    	            	}
-	    	            	definition.required.push(requiredSuperPropertyName);
-	    				});
-	    			}
-	    		}
-	    	});
-    	}    	
+        if (type.extendsList) {
+            _.each(type.extendsList.members, function (superType) {
+                var superDefinition = definitions.interfaces[superType.actualText];
+                // does the provisionning if a definition exists for the current super type
+                if (superDefinition) {
+                    // recursive call
+                    mergeInheritedProperties(superType, definition, definitions);
+                    // merges properties
+                    for(var superKey in superDefinition.properties) {
+                        definition.properties[superKey] = superDefinition.properties[superKey];
+                    }
+                    // merges required
+                    if (superDefinition.required) {
+                        _.each(superDefinition.required, function (requiredSuperPropertyName) {
+                            if (!definition.required) {
+                                definition.required = [];
+                            }
+                            definition.required.push(requiredSuperPropertyName);
+                        });
+                    }
+                }
+            });
+        }       
     }
     
     /**
@@ -186,14 +186,14 @@
      * @param definitions {object} the set of handled interface and enum definitions
      */
     function handleEnumDeclaration(type, definitions) {
-	    var definition = definitions.enums[type.name.actualText] = {};
-	    definition.enumeration = {};
-	    _.each(type.members.members, function (declaration) {
+        var definition = definitions.enums[type.name.actualText] = {};
+        definition.enumeration = {};
+        _.each(type.members.members, function (declaration) {
             var comment = declaration.declaration.declarators.members[0].docComments().slice(-1)[0];
             var commentText = comment ? comment.getDocCommentTextValue() : "";
-	    	definition.enumeration[declaration.declaration.declarators.members[0].id.actualText] = commentText;
-	    });
-	}
+            definition.enumeration[declaration.declaration.declarators.members[0].id.actualText] = commentText;
+        });
+    }
 
     /**
      * Extracts the description and the validation keywords from a comment
