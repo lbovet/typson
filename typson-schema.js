@@ -31,7 +31,7 @@
 
     var primitiveTypes = [ "string", "number", "boolean", "any" ];
     var validationKeywords = [ "type", "minimum", "exclusiveMinimum", "maximum", "exclusiveMaximum", "multipleOf", "minLength", "maxLength", "format", "pattern", "minItems", "maxItems", "uniqueItems", "default", "additionalProperties" ];
-    var annotedValidationKeywordPattern = /@[a-z]+\s*[^@\s]+/gi;
+    var annotedValidationKeywordPattern = /@[a-z.]+\s*[^@\s]+/gi;
     var TypescriptASTFlags = { 'optionalName' : 4, 'arrayType' : 8 };
 
     /**
@@ -242,6 +242,12 @@
         while ((annotation = annotedValidationKeywordPattern.exec(comment))) {
             var annotationTokens = annotation[0].split(' ');
             var keyword = annotationTokens[0].slice(1);
+            var path = keyword.split('.');
+            var context = null;
+            if (path.length > 1) {
+                var context = path[0];
+                keyword = path[1];
+            }
             // case sensitive check inside the dictionary
             if (validationKeywords.indexOf(keyword) >= 0) {
                 var value = annotationTokens.length > 1 ? annotationTokens[1] : '';
@@ -249,7 +255,13 @@
                     value = JSON.parse(value);
                 } catch (e) {
                 }
-                to[keyword] = value;
+                if (context) {
+                    if (!to[context]) to[context] = {};
+                    to[context][keyword] = value;
+                }
+                else {
+                    to[keyword] = value;
+                }
             }
         }
     }
