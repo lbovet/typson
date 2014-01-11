@@ -99,14 +99,18 @@
         
         definition.properties = {};
         mergeInheritedProperties(type, definition, definitions);
+        handlePropertyDeclaration(type, definition, definitions, refPath);
+    }
 
+
+    function handlePropertyDeclaration(type, definition, definitions, refPath) {
         _.each(type.members.members, function (variable) {
             var property = definition.properties[variable.id.actualText] = {};
             copyComment(variable, property);
             var overridenType = property.type;
             var variableType = variable.typeExpr.term.actualText;
             var propertyType = null;
-            
+
             //required
             if (!(variable.id.getFlags() & TypescriptASTFlags.optionalName)) {
                 if (!definition.required) {
@@ -122,14 +126,25 @@
             //maps
             else if (variable.typeExpr.term.getFlags() & TypescriptASTFlags.arrayType) {
                 property.type = "object";
-                propertyType = property.additionalProperties = {};
-                variableType = variable.typeExpr.term.members.members[0].returnTypeAnnotation.term.actualText;
+
+                var members = variable.typeExpr.term.members.members;
+
+                // Map (arbitrary properties)
+                if (members[0].returnTypeAnnotation) {
+                    propertyType = property.additionalProperties = {};
+                    variableType = variable.typeExpr.term.members.members[0].returnTypeAnnotation.term.actualText;
+                }
+                // Object (inline declaration)
+                else {
+                    property.properties = {};
+                    handlePropertyDeclaration(variable.typeExpr.term, property, definitions);
+                    variableType = "any";
+                }
             } 
             //other
             else {
                 propertyType = property;
             }
-            
             //enums
             if (definitions.enums[variableType]) {
                 property.enum = _.keys(definitions.enums[variableType].enumeration);
