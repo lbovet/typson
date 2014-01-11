@@ -191,7 +191,9 @@
         _.each(type.members.members, function (declaration) {
             var comment = declaration.declaration.declarators.members[0].docComments().slice(-1)[0];
             var commentText = comment ? comment.getDocCommentTextValue() : "";
-            definition.enumeration[declaration.declaration.declarators.members[0].id.actualText] = commentText;
+            var declarationText = declaration.declaration.declarators.members[0].id.actualText;
+            declarationText = declarationText.replace(/^["'](.+)["']$/, '$1');
+            definition.enumeration[declarationText] = commentText;
         });
     }
 
