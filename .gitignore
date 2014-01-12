@@ -2,6 +2,3 @@
 .idea
 node_modules
 npm-debug.log
-
-testbench.html
-require.js
