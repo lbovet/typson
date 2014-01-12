@@ -33,7 +33,7 @@
     var validationKeywords = [ "type", "minimum", "exclusiveMinimum", "maximum", "exclusiveMaximum", "multipleOf", "minLength", "maxLength", "format", "pattern", "minItems", "maxItems", "uniqueItems", "default", "additionalProperties" ];
     var annotedValidationKeywordPattern = /@[a-z.]+\s*[^@\s]+/gi;
     var TypescriptASTFlags = { 'optionalName' : 4, 'arrayType' : 8 };
-
+    var defaultProperties = { additionalProperties: false};
     /**
      * Creates json-schema type definitions from a type script.
      *
@@ -93,7 +93,7 @@
      * @param definitions {object} the set of handled interface and enum definitions
      */
     function handleInterfaceDeclaration(type, definitions, refPath) {
-        var definition = definitions.interfaces[type.name.actualText] = {};
+        var definition = definitions.interfaces[type.name.actualText] = _.clone(defaultProperties);
         definition.id = type.name.actualText;
         copyComment(type, definition);
         
@@ -136,6 +136,7 @@
                 }
                 // Object (inline declaration)
                 else {
+                    _.defaults(property, defaultProperties);
                     property.properties = {};
                     handlePropertyDeclaration(variable.typeExpr.term, property, definitions);
                     variableType = "any";
