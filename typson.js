@@ -33,6 +33,9 @@
 
     if (typeof window === 'undefined') { // assuming node.js
         var requirejs = require('requirejs');
+        requirejs.config({
+            baseUrl: __dirname
+        });
     } else {
         var requirejs = require;
     }
