@@ -103,6 +103,15 @@
     }
 
 
+    /**
+     * Handles property or interface declarations and adds them to the interface definition. 
+     * Recursive, if the property has child properties, i.e. inline object declarations, 
+     * this function will recurse down to get all the definitions in the schema.
+     *
+     * @param type {object} the TypeScript AST node associated to the property declaration
+     * @param definition {object} the property definition
+     * @param definitions {object} the set of handled interface and enum definitions
+     */
     function handlePropertyDeclaration(type, definition, definitions, refPath) {
         _.each(type.members.members, function (variable) {
             var property = definition.properties[variable.id.actualText] = {};
