@@ -157,7 +157,7 @@
             }
             //enums
             if (definitions.enums[variableType]) {
-                property.enum = _.keys(definitions.enums[variableType].enumeration);
+                propertyType.enum = _.keys(definitions.enums[variableType].enumeration);
                 addEnumDescription(definitions.enums[variableType].enumeration, property);
             } 
             //other
