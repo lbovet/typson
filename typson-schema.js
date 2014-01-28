@@ -142,6 +142,15 @@
                 if (members[0].returnTypeAnnotation) {
                     propertyType = property.additionalProperties = {};
                     variableType = variable.typeExpr.term.members.members[0].returnTypeAnnotation.term.actualText;
+                    
+                    if (!variableType) {
+                        // Map where value is an inline property declaration
+                        _.defaults(property, defaultProperties);
+                        _.defaults(property.additionalProperties, defaultProperties);
+                        property.additionalProperties.properties = {};
+                        handlePropertyDeclaration(variable.typeExpr.term.members.members[0].returnTypeAnnotation.term, property.additionalProperties, definitions);    
+                        variableType = "any";
+                    }
                 }
                 // Object (inline declaration)
                 else {
