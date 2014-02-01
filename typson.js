@@ -58,8 +58,12 @@
     api.tree = function (uri) {
         return Q.promise(function (resolve, fail) {
             api.ready.done(function () {
+                var settings = new TypeScript.CompilationSettings();
+                settings.codeGenTarget = 1;
+                var compiler = new TypeScript.TypeScriptCompiler();
+                compiler.emitOptions = new TypeScript.EmitOptions(settings);
                 var context = {
-                    compiler: new TypeScript.TypeScriptCompiler(),
+                    compiler: compiler,
                     files: [],
                     syntaxError: false
                 };
