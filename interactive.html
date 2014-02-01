@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="lib/require.js"></script>
+    <title>Typson playground</title>
+    <style>
+    body, body * {
+        vertical-align: top;
+    }
+    #source {
+        font-family:monospace;
+        font-size:10pt;
+        display:inline-block;
+        width:40%;
+        height:600px;
+        tab-size:2;
+    }
+    #generate {
+        display:inline-block;
+    }
+    #schema {
+        tab-size:2;
+        font-family:monospace;
+        font-size:10pt;
+        white-space: pre-wrap;
+        display:inline-block;
+        width:40%;
+        height:600px;
+        border:1px solid #eee;
+        overflow:auto;
+    }
+    #line {
+        position:absolute;
+        top:0;
+        bottom:0;
+        height:100%;
+        left:0;
+        right:0;
+        width:100%;
+        z-index:1;
+    }
+    </style>
+</head>
+<body>
+    <textarea id="source">
+interface Dimension {
+    /** Width in cm */
+        width: number;
+
+    /** Height in cm */
+        height: number;
+
+    /** Length in cm */
+        length:  number;
+}
+    </textarea>
+    <button id="generate">Run</button>
+    <div id="schema"></div>
+
+    <script>
+        require.config({ urlArgs: "bust=" +  (new Date()).getTime() });
+        require(["typson-schema"], function(typson) {
+            
+            var srcElement = document.getElementById("source");
+            var tgtElement = document.getElementById("schema");
+            var button = document.getElementById("generate");
+
+            function generate() {
+                tgtElement.innerHTML = "";
+                var ts = srcElement.value.trim();
+                typson.definitions(ts).done(function(definitions) {
+                    tgtElement.innerHTML = JSON.stringify(definitions, null, 2);
+                });        
+            }
+
+            // Add click functionality
+            button.addEventListener('click', generate ,true);
+        });
+    </script>
+</body>
+</html>

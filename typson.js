@@ -33,6 +33,9 @@
 
     if (typeof window === 'undefined') { // assuming node.js
         var requirejs = require('requirejs');
+        requirejs.config({
+            baseUrl: __dirname
+        });
     } else {
         var requirejs = require;
     }
@@ -146,7 +149,6 @@
         var promises = _.map(scripts, function (locationOrScript) {
             // Each promise loads and adds a file to the compiler
             if (context.files.indexOf(locationOrScript) == -1) {
-                context.files.push(locationOrScript);
                 return loadScript(locationOrScript)
                     .then(function (script) {
                         script = convertInlineComments(script);
@@ -156,7 +158,11 @@
                             return fullPath(locationOrScript, file.path)
                         });
                         // Start loading the referenced files
-                        var referencesPromise = load(context, referencedFiles);
+                        var referencesPromise = load(context, referencedFiles)
+                        .then(function(a){
+                            context.files.push(locationOrScript);
+                            return a;
+                        });
                         // Parse the file
                         compiler.addSourceUnit(locationOrScript, snapshot, null, 0, true, referencedFiles);
                         var lineMap = new TypeScript.LineMap(snapshot.getLineStartPositions(), snapshot.getLength());

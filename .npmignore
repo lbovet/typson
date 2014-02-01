@@ -5,5 +5,6 @@ lib/require.js
 lib/superagent.js
 lib/underscore.js
 index.html
+interactive.html
 example
 
