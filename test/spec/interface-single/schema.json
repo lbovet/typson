@@ -1,0 +1,18 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "additionalProperties": false,
+    "id": "MyObject",
+    "properties": {
+        "propA": {
+            "type": "number"
+        },
+        "propB": {
+            "type": "number"
+        }
+    },
+    "required": [
+        "propA",
+        "propB"
+    ],
+    "definitions": {}
+}

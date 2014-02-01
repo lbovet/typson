@@ -10,16 +10,16 @@ interface Product {
      * Uniquely defines the product
      * @pattern [A-Z][a-z][0-9]_
      */
-        name: string;
+    name: string;
 
     /** How big it is */
-        dimension?: Dimension;
+    dimension?: Dimension;
 
     /** Classification */
-        category: Category;
+    category: Category;
 
     /** Where is it from? */
-        origin: Origin;
+    origin: Origin;
 }
 
 interface WeightedProduct extends Product {
@@ -28,11 +28,11 @@ interface WeightedProduct extends Product {
 
 interface Category {
     /** Uniquely identifies the category */
-        name: string;
+    name: string;
 
     /** Classification level from 1 to 5 (highest)
      * @type integer */
-        level: number;
+    level: number;
 }
 
 interface CategoryIndex {

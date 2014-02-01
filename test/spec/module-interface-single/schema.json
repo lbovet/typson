@@ -1,0 +1,18 @@
+{
+    "MyModule.MyObject": {
+        "additionalProperties": false,
+        "id": "MyModule.MyObject",
+        "properties": {
+            "propA": {
+                "type": "number"
+            },
+            "propB": {
+                "type": "number"
+            }
+        },
+        "required": [
+            "propA",
+            "propB"
+        ]
+    }
+}
