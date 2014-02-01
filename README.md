@@ -5,6 +5,8 @@ Write your type definitions in TypeScript and Typson will generate json-schemas.
 
 [See it in action](http://lbovet.github.io/typson-demo/) with its buddy [docson](https://github.com/lbovet/docson)
 
+[![Build Status](https://travis-ci.org/lbovet/typson.png?branch=master)](https://travis-ci.org/lbovet/typson)
+
 ## Features
 
 * Available as Node.js module
