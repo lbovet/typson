@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <script src="lib/require.js"></script>
+    <script src="vendor/require.js"></script>
     <title>Typson playground</title>
 </head>
 <body>
     <pre id="types"></pre>
     <script>
         require.config({ urlArgs: "bust=" +  (new Date()).getTime() });
-        require(["typson-schema"], function(typson) {
+        require(["lib/typson-schema"], function(typson) {
             // Show types as json-schema definitions
             typson.definitions("example/invoice/line.ts").done(function(tree) {
                 document.getElementById("types").innerHTML = JSON.stringify(tree, undefined, 2);

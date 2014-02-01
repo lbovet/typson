@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <script src="lib/require.js"></script>
+    <script src="vendor/require.js"></script>
     <title>Typson playground</title>
     <style>
     body, body * {
@@ -59,7 +59,7 @@ interface Dimension {
 
     <script>
         require.config({ urlArgs: "bust=" +  (new Date()).getTime() });
-        require(["typson-schema"], function(typson) {
+        require(["lib/typson-schema"], function(typson) {
             
             var srcElement = document.getElementById("source");
             var tgtElement = document.getElementById("schema");
