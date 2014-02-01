@@ -1,0 +1,61 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "definitions": {
+        "MyModule.Def": {
+            "additionalProperties": false,
+            "id": "MyModule.Def",
+            "properties": {
+                "nest": {
+                    "$ref": "#/definitions/MyModule.Def"
+                },
+                "prev": {
+                    "$ref": "#/definitions/MyModule.Def"
+                },
+                "propA": {
+                    "$ref": "#/definitions/MyModule.SubModule.HelperA"
+                },
+                "propB": {
+                    "$ref": "#/definitions/MyModule.SubModule.HelperB"
+                }
+            },
+            "required": [
+                "nest",
+                "prev",
+                "propA",
+                "propB"
+            ]
+        },
+        "MyModule.SubModule.HelperA": {
+            "additionalProperties": false,
+            "id": "MyModule.SubModule.HelperA",
+            "properties": {
+                "propA": {
+                    "type": "number"
+                },
+                "propB": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "propA",
+                "propB"
+            ]
+        },
+        "MyModule.SubModule.HelperB": {
+            "additionalProperties": false,
+            "id": "MyModule.SubModule.HelperB",
+            "properties": {
+                "propA": {
+                    "type": "number"
+                },
+                "propB": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "propA",
+                "propB"
+            ]
+        }
+    }
+}

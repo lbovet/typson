@@ -69,19 +69,26 @@ module.exports = function (grunt) {
         }
     });
 
+    grunt.registerTask('default', ['test']);
+
     grunt.registerTask('prep', [
         'clean',
-        // 'jshint:code', // should be active!
+        // 'jshint:code', // hurts but should be active!
         'jshint:support',
         'jshint:tests'
     ]);
     grunt.registerTask('test', [
         'prep',
+        'node',
+        'phantom'
+    ]);
+    grunt.registerTask('node', [
+        'clean',
+        'mochaTest:all'
+    ]);
+    grunt.registerTask('phantom', [
         'connect:test',
-        'mochaTest',
         'mocha'
     ]);
-    grunt.registerTask('default', ['test']);
-
     grunt.registerTask('server', ['connect:server']);
 };

@@ -32,8 +32,8 @@
                     // load the expected result
                     return imports.readJSON(baseDir + 'test/spec/' + group + '/definitions.json');
                 }).then(function (expected) {
-                    // check & compare
-                    assert.isObject(expected, 'expected');
+                    assert.isObject(expected, 'verify expected');
+                    // test
                     assert.deepEqual(actual, expected);
                 });
             });
@@ -51,8 +51,8 @@
                     // load the expected result
                     return imports.readJSON(baseDir + 'test/spec/' + group + '/schema.json');
                 }).then(function (expected) {
-                    // check & compare
-                    assert.isObject(expected, 'expected');
+                    assert.isObject(expected, 'verify expected');
+                    // test
                     assert.deepEqual(actual, expected);
                 });
             });
@@ -71,5 +71,8 @@
 
         assertSchema('interface-single', 'main.ts', 'MyObject');
         assertSchema('interface-multi', 'main.ts', 'MyObject');
+
+        // assertSchema('module-interface-single', 'main.ts', 'MyObject');
+        // assertSchema('module-interface-deep', 'main.ts', 'MyObject');
     });
 });
