@@ -11,6 +11,7 @@
     "bin": {
         "typson": "./typson"
     },
+    "main": "./typson-schema.js",
     "repository": {
         "type": "git",
         "url": "https://github.com/lbovet/typson.git"
