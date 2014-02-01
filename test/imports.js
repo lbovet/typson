@@ -11,32 +11,39 @@
         // RequireJS
     } else if (typeof define === 'function' && define.amd) {
         return define([
-            '../vendor/underscore',
-            '../vendor/q',
-            '../vendor/chai',
-            require('superagent'),
-            '../lib/typson',
-            '../lib/typson-schema'
+            'vendor/underscore',
+            'vendor/q',
+            'vendor/chai',
+            'vendor/superagent',
+            'lib/typson',
+            'lib/typson-schema'
         ], definition);
     }
 })(function (underscore, Q, chai, request, typson, schema) {
+
     var fs;
     var mkdirp;
     var path;
+    var baseDir = '';
+
     var isNode = (typeof process === 'object' && typeof process.execPath !== 'undefined');
     if (isNode) {
         fs = require('fs');
         mkdirp = require('mkdirp');
         path = require('path');
     }
+    else {
+        baseDir = '../';
+    }
 
+    Q.longStackSupport = true;
     chai.Assertion.includeStack = true;
 
     // For some odd readom every test file needs to call this
     function init(describe, it) {
         if (it && !it.eventually) {
             // For safety
-            var promiseDoneMistake = function() {
+            var promiseDoneMistake = function () {
                 throw new Error('don\'t use a done() callback when using it.eventually()');
             };
             // Monkey promise support
@@ -57,26 +64,38 @@
     function readFile(target) {
         if (isNode) {
             // Node
-            return Q.nfcall(fs.readFile, target, 'utf8').fail(function() {
+            return Q.nfcall(fs.readFile, target, 'utf8').fail(function () {
                 // sileny fail for Node (for easy update of new tests)
                 return null;
             });
         }
-        return Q.nfcall(request, target);
+        var defer = Q.defer();
+        request(target).set('Content-Type', 'text/plain').end(function (res) {
+            if (res.ok) {
+                defer.resolve(res.body);
+            } else {
+                defer.reject(new Error('bad request: ' + target));
+
+            }
+        });
+        return defer.promise;
     }
 
     function readJSON(target) {
-        return readFile(target).then(function(str) {
+        return readFile(target).then(function (str) {
             if (!str) {
                 return null;
             }
-            return JSON.parse(str);
+            if (str && typeof str === 'object') {
+                return str;
+            }
+            return Q.fcall(JSON.parse, str);
         });
     }
 
     function writeFile(target, content) {
         if (isNode) {
-            return Q.nfcall(mkdirp, path.dirname(target), '0.744').then(function() {
+            return Q.nfcall(mkdirp, path.dirname(target), '744').then(function () {
                 return Q.nfcall(fs.writeFile, target, content, 'utf8');
             });
         }
@@ -90,6 +109,7 @@
 
     // Export bundle for easy access in tests
     return {
+        baseDir: baseDir,
         isNode: isNode,
         init: init,
         underscore: underscore,

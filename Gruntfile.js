@@ -3,7 +3,9 @@
 module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-clean');
+    grunt.loadNpmTasks('grunt-contrib-connect');
     grunt.loadNpmTasks('grunt-mocha-test');
+    grunt.loadNpmTasks('grunt-mocha');
 
     grunt.initConfig({
         jshint: {
@@ -33,6 +35,37 @@ module.exports = function (grunt) {
                     'test/spec/*.test.js'
                 ]
             }
+        },
+        mocha: {
+            options: {
+                bail: true,
+                log: true,
+                mocha: {
+                    ignoreLeaks: true
+                },
+                reporter: 'mocha-unfunk-reporter',
+                run: false
+            },
+            pass_amd: {
+                options: {
+                    urls: ['http://localhost:9009/test/pass-amd.html']
+                }
+            }
+        },
+        connect: {
+            test: {
+                options: {
+                    port: 9009,
+                    base: './'
+                }
+            },
+            server: {
+                options: {
+                    keepalive: true,
+                    port: 9001,
+                    base: './'
+                }
+            }
         }
     });
 
@@ -44,7 +77,11 @@ module.exports = function (grunt) {
     ]);
     grunt.registerTask('test', [
         'prep',
-        'mochaTest'
+        'connect:test',
+        'mochaTest',
+        'mocha'
     ]);
     grunt.registerTask('default', ['test']);
+
+    grunt.registerTask('server', ['connect:server']);
 };
