@@ -28,12 +28,12 @@
         _ = underscore;
     }
     var api = {};
-
     var primitiveTypes = [ "string", "number", "boolean", "any" ];
     var validationKeywords = [ "type", "minimum", "exclusiveMinimum", "maximum", "exclusiveMaximum", "multipleOf", "minLength", "maxLength", "format", "pattern", "minItems", "maxItems", "uniqueItems", "default", "additionalProperties" ];
     var annotedValidationKeywordPattern = /@[a-z.]+\s*[^@\s]+/gi;
     var TypescriptASTFlags = { 'optionalName' : 4, 'arrayType' : 8 };
     var defaultProperties = { additionalProperties: false};
+
     /**
      * Creates json-schema type definitions from a type script.
      *
@@ -49,13 +49,8 @@
                         enums: {}
                 };
                 _.each(tree, function (script) {
-                    _.each(script.moduleElements.members, function (type) {
-                        if (type.nodeType() == TypeScript.NodeType.InterfaceDeclaration) {
-                            handleInterfaceDeclaration(type, definitions, refPath);
-                        }
-                        else if (type.nodeType() == TypeScript.NodeType.ModuleDeclaration) {
-                            handleEnumDeclaration(type, definitions);
-                        }
+                    _.each(script.moduleElements.members, function (decl) {
+                        handleDeclaration(decl, definitions, refPath, "");
                     });
                 });
                 resolve(definitions.interfaces);
@@ -86,20 +81,40 @@
         });
     }
 
+    function handleDeclaration(decl, definitions, refPath, modulePath) {
+        if (decl.nodeType() == TypeScript.NodeType.InterfaceDeclaration) {
+            handleInterfaceDeclaration(decl, definitions, refPath, modulePath);
+        }
+        else if (decl.nodeType() == TypeScript.NodeType.ModuleDeclaration) {
+            if (decl.getModuleFlags() & TypeScript.ModuleFlags.IsEnum) {
+                handleEnumDeclaration(decl, definitions, modulePath);
+            } else {
+                _.each(decl.members.members, function (subDecl) {
+                    var subModulePath = modulePath;
+                    if(!(decl.getModuleFlags() & TypeScript.ModuleFlags.IsWholeFile)) {
+                        subModulePath+=(decl.name.actualText+".");
+                    }
+                    handleDeclaration(subDecl, definitions, refPath, subModulePath);
+                });
+            }
+        }
+    }
+
     /**
      * Handles interface declaration as new definition and registers it in the global set of interface definitions
      *
      * @param type {object} the TypeScript AST node associated to the interface declaration
      * @param definitions {object} the set of handled interface and enum definitions
      */
-    function handleInterfaceDeclaration(type, definitions, refPath) {
-        var definition = definitions.interfaces[type.name.actualText] = _.clone(defaultProperties);
-        definition.id = type.name.actualText;
+    function handleInterfaceDeclaration(type, definitions, refPath, modulePath) {
+        var name = (modulePath.length > 0 ? modulePath : "") + type.name.actualText;
+        var definition = definitions.interfaces[name] = _.clone(defaultProperties);
+        definition.id = name;
         copyComment(type, definition);
         
         definition.properties = {};
         mergeInheritedProperties(type, definition, definitions);
-        handlePropertyDeclaration(type, definition, definitions, refPath);
+        handlePropertyDeclaration(type, definition, definitions, refPath, modulePath);
     }
 
 
@@ -112,12 +127,12 @@
      * @param definition {object} the property definition
      * @param definitions {object} the set of handled interface and enum definitions
      */
-    function handlePropertyDeclaration(type, definition, definitions, refPath) {
+    function handlePropertyDeclaration(type, definition, definitions, refPath, modulePath) {
         _.each(type.members.members, function (variable) {
             var property = definition.properties[variable.id.actualText] = {};
             copyComment(variable, property);
             var overridenType = property.type;
-            var variableType = variable.typeExpr.term.actualText;
+            var variableType = extractFullTypeName(variable.typeExpr.term);
             var propertyType = null;
 
             //required
@@ -164,22 +179,39 @@
             else {
                 propertyType = property;
             }
+
+            var fullTypeName = variableType;
+            if(modulePath.length > 0 && variableType.indexOf(".") == -1) {
+                fullTypeName = modulePath + variableType;
+            }
+
             //enums
-            if (definitions.enums[variableType]) {
-                propertyType.enum = _.keys(definitions.enums[variableType].enumeration);
-                addEnumDescription(definitions.enums[variableType].enumeration, property);
+            if (definitions.enums[fullTypeName]) {
+                propertyType.enum = _.keys(definitions.enums[fullTypeName].enumeration);
+                addEnumDescription(definitions.enums[fullTypeName].enumeration, property);
             } 
             //other
             else if (primitiveTypes.indexOf(variableType) == -1) {
-                propertyType.$ref = refPath? refPath+"/"+variableType: variableType;
+                propertyType.$ref = refPath? refPath+"/"+fullTypeName: fullTypeName;
             } else {
                 if(variableType !== "any") {
-                    propertyType.type = overridenType || variableType;
+                    propertyType.type = overridenType || fullTypeName;
                 }
             }
         });
     }
-    
+
+    function extractFullTypeName(term) {
+
+        if(term.actualText) {
+            return term.actualText;
+        } else {
+            if(term.nodeType() == TypeScript.NodeType.MemberAccessExpression) {
+                return extractFullTypeName(term.operand1)+"."+extractFullTypeName(term.operand2);
+            }
+        }
+    }
+
     /**
      * Visits every super type extended by the given type recursively and provisions the given definition with the properties of the associated super definitions.
      * 
@@ -219,8 +251,9 @@
      * @param type {object} the TypeScript AST node associated to the enum declaration
      * @param definitions {object} the set of handled interface and enum definitions
      */
-    function handleEnumDeclaration(type, definitions) {
-        var definition = definitions.enums[type.name.actualText] = {};
+    function handleEnumDeclaration(type, definitions, modulePath) {
+        var name = (modulePath.length > 0 ? modulePath : "") + type.name.actualText;
+        var definition = definitions.enums[name] = {};
         definition.enumeration = {};
         _.each(type.members.members, function (declaration) {
             var comment = declaration.declaration.declarators.members[0].docComments().slice(-1)[0];
