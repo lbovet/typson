@@ -2,7 +2,6 @@
     "$schema": "http://json-schema.org/draft-04/schema#",
     "definitions": {
         "MyModule.MyObject": {
-            "additionalProperties": false,
             "id": "MyModule.MyObject",
             "properties": {
                 "propA": {
@@ -15,7 +14,8 @@
             "required": [
                 "propA",
                 "propB"
-            ]
+            ],
+            "additionalProperties": false
         }
     }
 }

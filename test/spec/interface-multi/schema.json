@@ -1,6 +1,5 @@
 {
     "$schema": "http://json-schema.org/draft-04/schema#",
-    "additionalProperties": false,
     "id": "MyObject",
     "properties": {
         "subA": {
@@ -14,9 +13,9 @@
         "subA",
         "subB"
     ],
+    "additionalProperties": false,
     "definitions": {
         "MySubObject": {
-            "additionalProperties": false,
             "id": "MySubObject",
             "properties": {
                 "propA": {
@@ -29,7 +28,8 @@
             "required": [
                 "propA",
                 "propB"
-            ]
+            ],
+            "additionalProperties": false
         }
     }
 }

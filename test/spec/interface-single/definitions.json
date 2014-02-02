@@ -1,6 +1,5 @@
 {
     "MyObject": {
-        "additionalProperties": false,
         "id": "MyObject",
         "properties": {
             "propA": {
@@ -13,6 +12,7 @@
         "required": [
             "propA",
             "propB"
-        ]
+        ],
+        "additionalProperties": false
     }
 }

@@ -1,6 +1,5 @@
 {
     "MyObject": {
-        "additionalProperties": false,
         "id": "MyObject",
         "properties": {
             "subA": {
@@ -13,10 +12,10 @@
         "required": [
             "subA",
             "subB"
-        ]
+        ],
+        "additionalProperties": false
     },
     "MySubObject": {
-        "additionalProperties": false,
         "id": "MySubObject",
         "properties": {
             "propA": {
@@ -29,6 +28,7 @@
         "required": [
             "propA",
             "propB"
-        ]
+        ],
+        "additionalProperties": false
     }
 }
