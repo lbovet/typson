@@ -7,6 +7,7 @@ vendor/q.js
 vendor/require.js
 vendor/superagent.js
 vendor/underscore.js
+vendor/traverse.js
 vendor/chai.js
 vendor/mocha.js
 index.html

@@ -2,7 +2,6 @@
     "$schema": "http://json-schema.org/draft-04/schema#",
     "definitions": {
         "MyModule.Def": {
-            "additionalProperties": false,
             "id": "MyModule.Def",
             "properties": {
                 "nest": {
@@ -23,39 +22,40 @@
                 "prev",
                 "propA",
                 "propB"
-            ]
+            ],
+            "additionalProperties": false
         },
         "MyModule.SubModule.HelperA": {
-            "additionalProperties": false,
             "id": "MyModule.SubModule.HelperA",
             "properties": {
                 "propA": {
                     "type": "number"
                 },
                 "propB": {
-                    "type": "number"
+                    "$ref": "#/definitions/MyModule.SubModule.HelperB"
                 }
             },
             "required": [
                 "propA",
                 "propB"
-            ]
+            ],
+            "additionalProperties": false
         },
         "MyModule.SubModule.HelperB": {
-            "additionalProperties": false,
             "id": "MyModule.SubModule.HelperB",
             "properties": {
                 "propA": {
-                    "type": "number"
+                    "$ref": "#/definitions/MyModule.SubModule.HelperA"
                 },
                 "propB": {
-                    "type": "number"
+                    "$ref": "#/definitions/MyModule.Def"
                 }
             },
             "required": [
                 "propA",
                 "propB"
-            ]
+            ],
+            "additionalProperties": false
         }
     }
 }

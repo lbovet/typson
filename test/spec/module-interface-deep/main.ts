@@ -8,11 +8,11 @@ module MyModule {
     export module SubModule {
         export interface HelperA {
             propA: number;
-            propB: number;
+            propB: HelperB;
         }
         export interface HelperB {
-            propA: number;
-            propB: number;
+            propA: SubModule.HelperA;
+            propB: Def;
         }
     }
 }
