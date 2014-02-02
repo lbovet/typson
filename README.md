@@ -26,9 +26,9 @@ Write your type definitions in TypeScript and Typson will generate json-schemas.
 ### Browser
 
 ```
-<script src="lib/require.js"/>
+<script src="vendor/require.js"/>
 <script>
-    require(["typson-schema"], function(typson) {
+    require(["lib/typson-schema"], function(typson) {
             typson.schema("example/invoice/line.ts", "Invoice").done(function(schema) {
                 console.log(schema);
             });
