@@ -72,7 +72,7 @@
         assertSchema('interface-single', 'main.ts', 'MyObject');
         assertSchema('interface-multi', 'main.ts', 'MyObject');
 
-        // assertSchema('module-interface-single', 'main.ts', 'MyObject');
+        assertSchema('module-interface-single', 'main.ts', 'MyObject');
         // assertSchema('module-interface-deep', 'main.ts', 'MyObject');
     });
 });

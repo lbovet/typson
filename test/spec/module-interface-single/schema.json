@@ -1,18 +1,21 @@
 {
-    "MyModule.MyObject": {
-        "additionalProperties": false,
-        "id": "MyModule.MyObject",
-        "properties": {
-            "propA": {
-                "type": "number"
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "definitions": {
+        "MyModule.MyObject": {
+            "additionalProperties": false,
+            "id": "MyModule.MyObject",
+            "properties": {
+                "propA": {
+                    "type": "number"
+                },
+                "propB": {
+                    "type": "number"
+                }
             },
-            "propB": {
-                "type": "number"
-            }
-        },
-        "required": [
-            "propA",
-            "propB"
-        ]
+            "required": [
+                "propA",
+                "propB"
+            ]
+        }
     }
 }
