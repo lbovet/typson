@@ -60,14 +60,14 @@
     }
 
     describe('definitions', function () {
-        // assertDefinitions('class-single', 'main.ts', 'MyObject');
+        assertDefinitions('class-single', 'main.ts', 'MyObject');
 
         assertDefinitions('interface-single', 'main.ts', 'MyObject');
         assertDefinitions('interface-multi', 'main.ts', 'MyObject');
     });
 
     describe('schema', function () {
-        // assertSchema('class-single', 'main.ts', 'MyObject');
+        assertSchema('class-single', 'main.ts', 'MyObject');
 
         assertSchema('interface-single', 'main.ts', 'MyObject');
         assertSchema('interface-multi', 'main.ts', 'MyObject');
