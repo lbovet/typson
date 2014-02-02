@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 if(process.argv[2] == "schema" && process.argv[3] !== undefined) {
-    var app = require('./typson-schema.js');
+    var app = require('./../lib/typson-schema.js');
     app.exec(process.argv[3], process.argv[4]);
 } else {
     require('sys').print('Usage: typson schema <url-or-path-to-type-script-file> [type]\n');
