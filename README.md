@@ -50,20 +50,20 @@ See how it looks like in the [Swagger Typson example](http://lbovet.github.io/sw
 Then, adapt Swagger UI's `index.html` to
 
 1. Include Typson integration [_after_ the main inline script](https://github.com/lbovet/swagger-ui/blob/716515235a43c37b7d6a0f749570eb17580d3f1a/dist/index.html#L63-L69):
-   ```
-      <script src="/typson/vendor/require.js"></script>
-      <script>
-          requirejs.config({
-              baseUrl: "/typson"
-          });
-          requirejs(["lib/typson-swagger"]);
-      </script>
-   ```
+```
+  <script src="/typson/vendor/require.js"></script>
+  <script>
+      requirejs.config({
+          baseUrl: "/typson"
+      });
+      requirejs(["lib/typson-swagger"]);
+  </script>
+```
 2. Initialize Swagger UI [only once Typson is ready](https://github.com/lbovet/swagger-ui/blob/716515235a43c37b7d6a0f749570eb17580d3f1a/dist/index.html#L30-L31):
-  ```
-      var typsonReady = $.Deferred();
-      typsonReady.done(function () {
-  ```
+```
+  var typsonReady = $.Deferred();
+  typsonReady.done(function () {
+```
   instead of jQuery's `$(function() {` initializer.
 
 Then, just replace the `models` section of your API file with a `tsModels` property [containing the URL pointing to the type script defining the models](https://github.com/lbovet/swagger-ui/blob/716515235a43c37b7d6a0f749570eb17580d3f1a/dist/api/test#L65).
