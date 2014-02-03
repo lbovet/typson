@@ -17,7 +17,7 @@ module.exports = function (grunt) {
                 'tasks/**/*.js'
             ],
             code: [
-                'lib/**/*.js',
+                'lib/**/*.js'
             ],
             tests: [
                 'test/**/*.js'
@@ -73,7 +73,7 @@ module.exports = function (grunt) {
 
     grunt.registerTask('prep', [
         'clean',
-        // 'jshint:code', // hurts but should be active!
+        'jshint:code',
         'jshint:support',
         'jshint:tests'
     ]);
