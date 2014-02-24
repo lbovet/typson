@@ -20,8 +20,8 @@ Write your type definitions in TypeScript and Typson will generate json-schemas.
 ### Node.js
 
 * Install with `npm install typson -g`
-* Generate definitions from a type script: `typson example/invoice/line.ts`
-* Generate a schema from a type declared in a type script: `typson example/invoice/line.ts Invoice`
+* Generate definitions from a type script: `typson schema example/invoice/line.ts`
+* Generate a schema from a type declared in a type script: `typson schema example/invoice/line.ts Invoice`
 
 ### Browser
 
