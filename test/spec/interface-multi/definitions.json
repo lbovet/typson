@@ -1,6 +1,7 @@
 {
     "MyObject": {
         "id": "MyObject",
+        "type": "object",
         "properties": {
             "subA": {
                 "$ref": "MyObject/MySubObject"
@@ -17,6 +18,7 @@
     },
     "MySubObject": {
         "id": "MySubObject",
+        "type": "object",
         "properties": {
             "propA": {
                 "type": "number"

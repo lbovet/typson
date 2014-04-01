@@ -3,6 +3,7 @@
     "definitions": {
         "MyModule.MyObject": {
             "id": "MyModule.MyObject",
+            "type": "object",
             "properties": {
                 "propA": {
                     "type": "number"

@@ -3,6 +3,7 @@
     "definitions": {
         "MyModule.Def": {
             "id": "MyModule.Def",
+            "type": "object",
             "properties": {
                 "nest": {
                     "$ref": "#/definitions/MyModule.Def"
@@ -27,6 +28,7 @@
         },
         "MyModule.SubModule.HelperA": {
             "id": "MyModule.SubModule.HelperA",
+            "type": "object",
             "properties": {
                 "propA": {
                     "type": "number"
@@ -43,6 +45,7 @@
         },
         "MyModule.SubModule.HelperB": {
             "id": "MyModule.SubModule.HelperB",
+            "type": "object",
             "properties": {
                 "propA": {
                     "$ref": "#/definitions/MyModule.SubModule.HelperA"
