@@ -1,6 +1,6 @@
 {
   "name": "typson",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "generates json-schema from TypeScript declarations",
   "homepage": "https://github.com/lbovet/typson",
   "author": {
