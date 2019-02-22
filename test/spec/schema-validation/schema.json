@@ -1,0 +1,131 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "MyObject",
+  "type": "object",
+  "properties": {
+    "anyProp": {
+      "description": "A prop that can take any value"
+    },
+    "numberProp": {
+      "default": "1",
+      "type": "number"
+    },
+    "minimumProp": {
+      "minimum": 0,
+      "type": "number"
+    },
+    "exclusiveMinimumProp": {
+      "exclusiveMinimum": 0,
+      "type": "number"
+    },
+    "maximumProp": {
+      "maximum": 10,
+      "type": "number"
+    },
+    "exclusiveMaximumProp": {
+      "exclusiveMaximum": 10,
+      "type": "number"
+    },
+    "multipleOfProp": {
+      "multipleOf": 2,
+      "type": "number"
+    },
+    "booleanProp": {
+      "default": "true",
+      "type": "boolean"
+    },
+    "stringProp": {
+      "default": "A default value\nIt spans multiple lines",
+      "type": "string"
+    },
+    "minLengthProp": {
+      "minLength": 10,
+      "type": "string"
+    },
+    "maxLengthProp": {
+      "maxLength": 100,
+      "type": "string"
+    },
+    "patternProp": {
+      "pattern": "^[a-f0-9]{32}$",
+      "type": "string"
+    },
+    "formatProp": {
+      "format": "md5",
+      "type": "string"
+    },
+    "itemsProp": {
+      "type": "array",
+      "items": {}
+    },
+    "minItemsProp": {
+      "minItems": 2,
+      "type": "array",
+      "items": {}
+    },
+    "maxItemsProp": {
+      "maxItems": 5,
+      "type": "array",
+      "items": {}
+    },
+    "uniqueItemsProp": {
+      "uniqueItems": 3,
+      "type": "array",
+      "items": {}
+    },
+    "nestedProp": {
+      "$ref": "#/definitions/MyNestedObject"
+    },
+    "enumProp": {
+      "description": "A property which is enumerable\n\n| Value  | Description\n|-\n| `enumA`| first enumerable value \n| `enumB`| second enumerable value ",
+      "default": "enumA",
+      "id": "enumOptions",
+      "enum": [
+        "enumA",
+        "enumB"
+      ]
+    },
+    "typeProp": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "optionalProp": {
+      "type": "string"
+    },
+    "invalidKeywordProp": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "anyProp",
+    "numberProp",
+    "minimumProp",
+    "exclusiveMinimumProp",
+    "maximumProp",
+    "exclusiveMaximumProp",
+    "multipleOfProp",
+    "booleanProp",
+    "stringProp",
+    "minLengthProp",
+    "maxLengthProp",
+    "patternProp",
+    "formatProp",
+    "itemsProp",
+    "minItemsProp",
+    "maxItemsProp",
+    "uniqueItemsProp",
+    "nestedProp",
+    "enumProp",
+    "typeProp",
+    "invalidKeywordProp"
+  ],
+  "additionalProperties": false,
+  "definitions": {
+    "MyNestedObject": {
+      "id": "MyNestedObject",
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {}
+    }
+  }
+}
