@@ -64,6 +64,8 @@
 
         assertDefinitions('interface-single', 'main.ts', 'MyObject');
         assertDefinitions('interface-multi', 'main.ts', 'MyObject');
+
+        assertDefinitions('forter-classic', 'main.ts', 'Transaction');
     });
 
     describe('schema', function () {
@@ -74,5 +76,7 @@
 
         assertSchema('module-interface-single', 'main.ts', 'MyObject');
         assertSchema('module-interface-deep', 'main.ts', 'MyObject');
+
+        assertSchema('forter-classic', 'main.ts', 'Transaction');
     });
 });

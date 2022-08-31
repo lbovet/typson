@@ -1,0 +1,34 @@
+{
+    "Transaction": {
+        "additionalProperties": true,
+        "id": "Transaction",
+        "type": "object",
+        "properties": {
+            "orderId": {
+                "type": "string",
+                "maxLength": 40,
+                "description": "Unique order/transaction identifier",
+                "default": "2356fdse0rr489"
+            },
+            "orderType": {
+                "type": "string"
+            },
+            "authorizationStep": {
+                "type": "string",
+                "_hiddenByDefault": "",
+                "_visibleFor": ["preauth"]
+            },
+            "accountOwner": {
+                "type": "string"
+            }
+        },
+        "required": [
+            "orderId"
+        ],
+        "description": "The request object containing information about the customer and order needed by Forter in order to provide a decision",
+        "metadata":{
+            "endpoint": "/v2/orders/:id",
+            "method": ["POST"]
+        }
+    }
+}
