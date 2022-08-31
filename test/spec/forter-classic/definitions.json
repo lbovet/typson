@@ -12,7 +12,10 @@
             },
             "orderType": {
                 "type": "string",
-                "_hiddenFor": ["3ds2only"]
+                "_hiddenFor": ["3ds2only"],
+                "metadata": {
+                    "hiddenForSynthetic": true
+                }
             },
             "authorizationStep": {
                 "type": "string",
