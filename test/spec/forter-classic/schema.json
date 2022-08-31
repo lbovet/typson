@@ -1,0 +1,40 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "additionalProperties": true,
+    "id": "Transaction",
+    "type": "object",
+    "properties": {
+        "orderId": {
+            "type": "string",
+            "maxLength": 40,
+            "description": "Unique order/transaction identifier",
+            "default": "2356fdse0rr489"
+        },
+        "orderType": {
+            "type": "string",
+            "_hiddenFor": ["3ds2only"]
+        },
+        "authorizationStep": {
+            "type": "string",
+            "_hiddenByDefault": "",
+            "_optionalFor": ["#29690", "magento2"],
+            "_visibleFor": ["preauth"]
+        },
+        "accountOwner": {
+            "type": "string",
+            "_requiredIfAvailable": "",
+            "_useForExample": ""
+        }
+    },
+    "required": [
+        "orderId",
+        "orderType",
+        "authorizationStep"
+    ],
+    "description": "The request object containing information about the customer and order needed by Forter in order to provide a decision",
+    "metadata":{
+        "endpoint": "/v2/orders/:id",
+        "method": ["POST"]
+    },
+    "definitions": {}
+}
