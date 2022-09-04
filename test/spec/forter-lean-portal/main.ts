@@ -26,4 +26,10 @@ interface Transaction {
      * @_useForExample
      */
     accountOwner?: string
+    /**
+     * hidden from schema
+     * @_leanHidden
+     */
+    iAhidden: string
+
 }
