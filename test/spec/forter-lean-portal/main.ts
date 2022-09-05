@@ -30,6 +30,6 @@ interface Transaction {
      * hidden from schema
      * @_leanHidden
      */
-    iAhidden: string
+    iAmHidden: string
 
 }

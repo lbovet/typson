@@ -21,10 +21,10 @@
         assert.ok(schema);
     });
 
-    function assertDefinitions(group, name, type) {
+    function assertDefinitions(group, name, type, schemaType) {
         it.eventually('"' + group + '"', function () {
 
-            return schema.definitions(baseDir + 'test/spec/' + group + '/' + name, type).then(function (actual) {
+            return schema.definitions(baseDir + 'test/spec/' + group + '/' + name, type, schemaType).then(function (actual) {
                 assert.isObject(actual, 'actual');
 
                 // lets save the actual result for later
@@ -40,10 +40,10 @@
         });
     }
 
-    function assertSchema(group, name, type) {
+    function assertSchema(group, name, type, schemaType) {
         it.eventually('"' + group + '"', function () {
 
-            return schema.schema(baseDir + 'test/spec/' + group + '/' + name, type).then(function (actual) {
+            return schema.schema(baseDir + 'test/spec/' + group + '/' + name, type, undefined, schemaType).then(function (actual) {
                 assert.isObject(actual, 'actual');
 
                 // lets save the actual result for later
@@ -66,6 +66,7 @@
         assertDefinitions('interface-multi', 'main.ts', 'MyObject');
 
         assertDefinitions('forter-classic', 'main.ts', 'Transaction');
+        assertDefinitions('forter-lean-portal', 'main.ts', 'Transaction', 'portal');
     });
 
     describe('schema', function () {
@@ -78,5 +79,6 @@
         assertSchema('module-interface-deep', 'main.ts', 'MyObject');
 
         assertSchema('forter-classic', 'main.ts', 'Transaction');
+        assertSchema('forter-lean-portal', 'main.ts', 'Transaction', 'portal');
     });
 });

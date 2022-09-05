@@ -16,7 +16,6 @@
         "authorizationStep": {
             "type": "string",
             "_hiddenByDefault": "",
-            "_optionalFor": ["magento2"],
             "_visibleFor": ["preauth"]
         },
         "accountOwner": {
