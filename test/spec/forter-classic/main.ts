@@ -13,6 +13,7 @@ interface Transaction {
     orderId: string;
     /**
      * @_hiddenFor 3ds2only
+     * @metadata.hiddenForSynthetic true
      */
     orderType: string;
     /**
