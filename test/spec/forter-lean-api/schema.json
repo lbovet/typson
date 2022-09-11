@@ -1,0 +1,30 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "additionalProperties": true,
+    "id": "Transaction",
+    "type": "object",
+    "properties": {
+        "orderId": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 6
+        },
+        "orderType": {
+            "type": "string"
+        },
+        "authorizationStep": {
+            "type": "string"
+        },
+        "accountOwner": {
+            "type": "string"
+        }
+    },
+    "required": [
+        "orderId"
+    ],
+    "metadata":{
+        "endpoint": "/v2/orders/:id",
+        "method": ["POST"]
+    },
+    "definitions": {}
+}

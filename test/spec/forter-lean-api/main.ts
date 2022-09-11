@@ -2,7 +2,6 @@
  * The request object containing information about the customer and order needed by Forter in order to provide a decision
  * @metadata.endpoint /v2/orders/:id
  * @metadata.method ["POST"]
- * @additionalProperties true
  * @_leanRequired orderId
  */
 interface Transaction {
@@ -10,23 +9,27 @@ interface Transaction {
      * Unique order/transaction identifier
      * @default 2356fdse0rr489
      * @maxLength 40
+     * @minLength 6
      */
     orderId: string;
     /**
-     * @_hiddenFor 3ds2only
-     * @metadata.hiddenForSynthetic true
+     * @_hiddenFor #1234
      */
     orderType: string;
     /**
      * @_visibleFor preauth
-     * @_optionalFor #29690,magento2
+     * @_optionalFor magento2
      * @_hiddenByDefault
      */
     authorizationStep: string
     /**
      * @_requiredIfAvailable
      * @_useForExample
-     * @_leanHidden
      */
     accountOwner?: string
+    /**
+     * hidden from schema
+     * @_leanHidden
+     */
+    iAmHidden: string
 }
