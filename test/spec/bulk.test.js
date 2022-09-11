@@ -67,6 +67,7 @@
 
         assertDefinitions('forter-classic', 'main.ts', 'Transaction');
         assertDefinitions('forter-lean-portal', 'main.ts', 'Transaction', 'portal');
+        assertDefinitions('forter-lean-api', 'main.ts', 'Transaction', 'api');
     });
 
     describe('schema', function () {
@@ -80,5 +81,6 @@
 
         assertSchema('forter-classic', 'main.ts', 'Transaction');
         assertSchema('forter-lean-portal', 'main.ts', 'Transaction', 'portal');
+        assertSchema('forter-lean-api', 'main.ts', 'Transaction', 'api');
     });
 });
