@@ -1,6 +1,6 @@
 {
     "Transaction": {
-        "additionalProperties": true,
+        "additionalProperties": false,
         "id": "Transaction",
         "type": "object",
         "properties": {
