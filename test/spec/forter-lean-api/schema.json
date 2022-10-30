@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-04/schema#",
-    "additionalProperties": true,
+    "additionalProperties": false,
     "id": "Transaction",
     "type": "object",
     "properties": {
