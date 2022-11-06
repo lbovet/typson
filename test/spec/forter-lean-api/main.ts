@@ -19,6 +19,7 @@ interface Transaction {
     /**
      * @_visibleFor preauth
      * @_optionalFor magento2
+     * @default
      * @_hiddenByDefault
      */
     authorizationStep: string

@@ -16,6 +16,7 @@
             "authorizationStep": {
                 "type": "string",
                 "_hiddenByDefault": "",
+                "default": "",
                 "_visibleFor": ["preauth"]
             },
             "accountOwner": {
