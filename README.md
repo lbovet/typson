@@ -1,4 +1,5 @@
 <p align='right'>A <a href="http://www.swisspush.org">swisspush</a> project <a href="http://www.swisspush.org" border=0><img align="top"  src='https://1.gravatar.com/avatar/cf7292487846085732baf808def5685a?s=32'></a></p>
+
 # Typson
 
 Write your type definitions in TypeScript and Typson will generate json-schemas.
@@ -72,6 +73,3 @@ Then, just replace the `models` section of your API file with a `tsModels` prope
 
 * https://github.com/ysangkok/typescript-interface-to-jsonschema
 * http://blog2.vorburger.ch/2013/11/devoxx-hackathon-2-typescript-ide-w.html
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/lbovet/typson/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
-
